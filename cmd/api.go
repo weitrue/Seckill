@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// apiCmd represents the api command
+// apiCmd api服务命令
 var apiCmd = &cobra.Command{
 	Use:   "api",
 	Short: "Seckill api server.",
@@ -28,13 +28,16 @@ var apiCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		wg := &sync.WaitGroup{}
 		wg.Add(2)
+		//
 		onApiExit := make(chan error, 1)
 		onRpcExit := make(chan error, 1)
 		go func() {
 			defer wg.Done()
 			if err := api.Run(); err != nil {
+				logrus.Error(err)
 				onApiExit <- err
 			}
+			//
 			close(onApiExit)
 		}()
 		go func() {
@@ -43,9 +46,13 @@ var apiCmd = &cobra.Command{
 				logrus.Error(err)
 				onRpcExit <- err
 			}
+			//
 			close(onRpcExit)
 		}()
+		// 优雅退出
+		// 监听退出chan
 		onSignal := make(chan os.Signal)
+		// 监听指定信号 ctrl+c 结束程序(可以被捕获、阻塞或忽略)
 		signal.Notify(onSignal, syscall.SIGINT, syscall.SIGTERM)
 		select {
 		case sig := <-onSignal:
@@ -64,6 +71,6 @@ var apiCmd = &cobra.Command{
 }
 
 func init() {
+	// 将api初始化命令添加到主命令中
 	rootCmd.AddCommand(apiCmd)
 }
-

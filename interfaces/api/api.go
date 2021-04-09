@@ -41,10 +41,7 @@ func Run() error {
 	initRouters(engine)
 
 	// TODO 初始化秒杀服务
-	//shop.Init()
 	pprof.Register(engine)
-
-	// TODO 加入集群
 
 	// 运行服务
 	return engine.RunListener(listener)

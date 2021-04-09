@@ -14,13 +14,21 @@
 
 [etcd]
     endpoints = ["node10:2379"]
+    config = "config"
+    service = "seckill"
 
 [api]
     bind = "0.0.0.0:8080"
     rpc = "0.0.0.0:8082"
+    ttl = 6
 
 [admin]
     bind = "0.0.0.0:8081"
 
 [blacklist]
     filePath = "./blacklist.txt"
+
+
+[protocol]
+    gRPC = "gRPC"
+    http = "http"

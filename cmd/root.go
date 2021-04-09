@@ -8,6 +8,7 @@
 package cmd
 
 import (
+	"Seckill/infrastructure/stores/etcd"
 	"fmt"
 	"os"
 
@@ -27,7 +28,7 @@ var rootCmd = &cobra.Command{
 	Long:  `Seckill server.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	//Run: func(cmd *cobra.Command, args []string) { },
+	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -42,6 +43,7 @@ func Execute() {
 }
 
 func init() {
+	// 设置initConfig在调用rootCmd的Execute()方法时运行
 	cobra.OnInitialize(initConfig)
 	flags := rootCmd.PersistentFlags()
 	flags.StringVarP(&cfgFile, "config", "c", "./config/Seckill.toml", "config file (default is $HOME/.Seckill.toml)")
@@ -50,32 +52,35 @@ func init() {
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if cfgFile != "" {
-		// Use config file from the flag.
+		// 从flag中获取配置文件
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
+		// 主目录
 		home, err := homedir.Dir()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".seckill" (without extension).
+		// 从主目录下搜索后缀名为".seckill"文件 (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".seckill")
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	viper.AutomaticEnv() // 读取匹配的环境变量
 
-	// If a config file is found, read it in.
+	// 读取找到的配置文件
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	} else {
 		panic(err)
 	}
-	//if err := etcd.Init(); err != nil {
-	//	panic(err)
-	//}
+
+	// 初始化 etcd 客户端连接
+	if err := etcd.Init(); err != nil {
+		panic(err)
+	}
+
 	//logger.InitLogger()
 	//if err := cluster.WatchClusterConfig(); err != nil {
 	//	panic(err)

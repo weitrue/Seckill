@@ -8,7 +8,9 @@
 package admin
 
 import (
+	"Seckill/infrastructure/cluster"
 	"Seckill/infrastructure/utils"
+	"encoding/json"
 	"net"
 	"time"
 
@@ -37,14 +39,20 @@ func Run() error {
 	InitRouters(engine)
 
 	// TODO 加入集群
+	cluster.Init(viper.GetString("etcd.service"))
+	if nodes, err := cluster.Discover(); err == nil {
+		n, _ := json.Marshal(nodes)
+		logrus.Info("discover nodes ", string(n))
+	} else {
+		logrus.Error("discover nodes error: ", err)
+	}
 
 	return engine.RunListener(listener)
 }
 
-func Exit()  {
+func Exit() {
 	_ = listener.Close()
 	// TODO等待请求处理完
 	time.Sleep(time.Second)
 	logrus.Info("admin server exit")
 }
-

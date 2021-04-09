@@ -10,7 +10,9 @@ package rpc
 import (
 	"Seckill/application/api"
 	"Seckill/application/api/rpc"
+	"Seckill/infrastructure/cluster"
 	"Seckill/infrastructure/utils"
+	"sync"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -20,6 +22,8 @@ import (
 
 var (
 	grpcS *grpc.Server
+	node  *cluster.Node // 集群中服务的节点
+	once  = &sync.Once{}
 )
 
 func Run() error {
@@ -34,13 +38,33 @@ func Run() error {
 	rpc.RegisterActivityRPCServer(grpcS, activityRPC)
 	// 支持 gRPC reflection，方便调试
 	reflection.Register(grpcS)
-
+	// 初始化集群信息
+	cluster.Init(viper.GetString("etcd.service"))
+	var addr string
+	if addr, err = utils.Extract(bind); err == nil {
+		// 注册节点信息
+		version := viper.GetString("api.version")
+		if version == "" {
+			version = "v0.1"
+		}
+		once.Do(func() {
+			node = &cluster.Node{
+				Addr:    addr,
+				Version: version,
+				Proto:   viper.GetString("protocol.gRPC"),
+			}
+			err = cluster.Register(node, viper.GetInt("api.ttl"))
+		})
+	}
+	if err != nil {
+		return err
+	}
 
 	return grpcS.Serve(listen)
 }
 
-func Exit()  {
+func Exit() {
 	grpcS.GracefulStop()
 	logrus.Info("rpc server exit!")
-	
+
 }
