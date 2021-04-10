@@ -5,10 +5,10 @@
  * Description: 缓存中value为结构体 活动信息
  **/
 
-package impl
+package object
 
 import (
-	"Seckill/infrastructure/stores/cache/object"
+	"Seckill/infrastructure/stores/cache"
 	"sync"
 )
 
@@ -17,7 +17,7 @@ type objCache struct {
 	data map[string]interface{}
 }
 
-func NewObjCache() object.ObjCache {
+func NewObjCache() cache.ObjCache {
 	return &objCache{
 		data: make(map[string]interface{}),
 	}

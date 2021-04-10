@@ -5,10 +5,10 @@
  * Description: 缓存中value为int 黑白名单 库存信息用户抢购次数等
  **/
 
-package impl
+package integer
 
 import (
-	"Seckill/infrastructure/stores/cache/integer"
+	"Seckill/infrastructure/stores/cache"
 	"sync"
 	"sync/atomic"
 )
@@ -18,7 +18,7 @@ type intCache struct {
 	data map[string]*int64 // 整数指针，方便原子操作
 }
 
-func NewIntCache() integer.IntCache {
+func NewIntCache() cache.IntCache {
 	return &intCache{
 		data: make(map[string]*int64),
 	}

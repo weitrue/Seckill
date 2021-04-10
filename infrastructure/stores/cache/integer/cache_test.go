@@ -1,14 +1,14 @@
 /**
  * Author: Wang P
  * Version: 1.0.0
- * Date: 2021/4/10 下午6:01
+ * Date: 2021/4/10 下午5:55
  * Description:
  **/
 
-package impl
+package integer
 
 import (
-	"Seckill/infrastructure/stores/cache/object"
+	"Seckill/infrastructure/stores/cache"
 	"os"
 	"strconv"
 	"sync"
@@ -17,19 +17,42 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestObjCache(t *testing.T) {
-	c := NewObjCache()
+func TestIntCache(t *testing.T) {
+	c := NewIntCache()
 	a := assert.New(t)
 	key := "test"
-	c.Set(key, int64(1))
-
+	c.Set(key, 1)
 	v, ok := c.Get(key)
 	a.Equal(int64(1), v)
 	a.Equal(true, ok)
 
+	v = c.Add(key, 5)
+	a.Equal(int64(6), v)
+
 	c.Del(key)
 	_, ok = c.Get(key)
 	a.Equal(false, ok)
+}
+
+func TestIntCache_Add(t *testing.T) {
+	cache := NewIntCache()
+	cases := []struct {
+		key    string
+		delta  int64
+		expect int64
+	}{
+		{"test1", 0, 0},
+		{"test1", 1, 1},
+		{"test1", -1, 0},
+		{"test1", 0, 0},
+		{"test2", 1, 1},
+		{"test3", -1, -1},
+	}
+	for _, c := range cases {
+		if cache.Add(c.key, c.delta) != c.expect {
+			t.Fatal(c)
+		}
+	}
 }
 
 func initKeys(b *testing.B) []string {
@@ -45,6 +68,13 @@ func initKeys(b *testing.B) []string {
 	return keys
 }
 
+func initIntCache(b *testing.B, c cache.IntCache, keys []string) {
+	l := len(keys)
+	for i := 0; i < b.N; i++ {
+		c.Set(keys[i%l], int64(i))
+	}
+}
+
 func initSyncMap(b *testing.B, c sync.Map, keys []string) {
 	l := len(keys)
 	for i := 0; i < b.N; i++ {
@@ -52,11 +82,18 @@ func initSyncMap(b *testing.B, c sync.Map, keys []string) {
 	}
 }
 
-func initObjCache(b *testing.B, c object.ObjCache, keys []string) {
+func BenchmarkIntCache_Add(b *testing.B) {
+	keys := initKeys(b)
+	c := NewIntCache()
+	initIntCache(b, c, keys)
 	l := len(keys)
+
+	b.ReportAllocs()
+	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		c.Set(keys[i%l], int64(i))
+		c.Add(keys[i%l], 1)
 	}
+	b.StopTimer()
 }
 
 func benchmarkCacheSet(b *testing.B, setter func(key string, val int64), keys []string) {
@@ -76,8 +113,8 @@ func BenchmarkCache_Set(b *testing.B) {
 	}
 	b.ResetTimer()
 
-	b.Run("objCache", func(b *testing.B) {
-		c := NewObjCache()
+	b.Run("intCache", func(b *testing.B) {
+		c := NewIntCache()
 		setter := func(key string, val int64) {
 			c.Set(key, val)
 		}
@@ -92,13 +129,14 @@ func BenchmarkCache_Set(b *testing.B) {
 	})
 }
 
-func BenchmarkObjCache_Set(b *testing.B) {
+// Set
+func BenchmarkIntCache_Set(b *testing.B) {
 	keys := initKeys(b)
-	c := NewObjCache()
+	c := NewIntCache()
 
 	b.ReportAllocs()
 	b.StartTimer()
-	initObjCache(b, c, keys)
+	initIntCache(b, c, keys)
 	b.StopTimer()
 }
 
@@ -112,10 +150,11 @@ func BenchmarkSyncMap_Set(b *testing.B) {
 	b.StopTimer()
 }
 
-func BenchmarkObjCache_Get(b *testing.B) {
+// Get
+func BenchmarkIntCache_Get(b *testing.B) {
 	keys := initKeys(b)
-	c := NewObjCache()
-	initObjCache(b, c, keys)
+	c := NewIntCache()
+	initIntCache(b, c, keys)
 	l := len(keys)
 
 	b.ReportAllocs()
@@ -140,10 +179,11 @@ func BenchmarkSyncMap_Get(b *testing.B) {
 	b.StopTimer()
 }
 
-func BenchmarkObjCache_Del(b *testing.B) {
+// 删除
+func BenchmarkIntCache_Del(b *testing.B) {
 	keys := initKeys(b)
-	c := NewObjCache()
-	initObjCache(b, c, keys)
+	c := NewIntCache()
+	initIntCache(b, c, keys)
 	l := len(keys)
 
 	b.ReportAllocs()

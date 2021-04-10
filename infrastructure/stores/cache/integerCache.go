@@ -5,12 +5,10 @@
  * Description:
  **/
 
-package integer
-
-import "Seckill/infrastructure/stores/cache"
+package cache
 
 type IntCache interface {
-	cache.Cache
+	Cache
 	// 缓存中value为int 黑白名单 库存信息用户抢购次数等
 	Get(key string) (int64, bool)
 	Set(key string, val int64)

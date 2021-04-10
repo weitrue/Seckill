@@ -5,12 +5,10 @@
  * Description:
  **/
 
-package object
-
-import "Seckill/infrastructure/stores/cache"
+package cache
 
 type ObjCache interface {
-	cache.Cache
+	Cache
 	// 缓存中value为结构体 活动信息
 	Get(key string) (interface{}, bool)
 	Set(key string, val interface{})
