@@ -39,7 +39,7 @@ func Run() error {
 	// 支持 gRPC reflection，方便调试
 	reflection.Register(grpcS)
 	// 初始化集群信息
-	cluster.Init(viper.GetString("etcd.service"))
+	cluster.Init(utils.GetServiceName())
 	var addr string
 	if addr, err = utils.Extract(bind); err == nil {
 		// 注册节点信息

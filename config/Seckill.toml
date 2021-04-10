@@ -1,6 +1,8 @@
 [global]
     logLevel = "info"
     pid = "./.pid"
+    service = "seckill"
+    config = "config"
 
 [mysql]
     address = "node10:3306"
@@ -11,11 +13,14 @@
 [redis]
     address = "node10:6379"
     auth = "123456"
+    [redis.DB]
+        lock = 0    # 锁相关存储的db
+        cron = 1    # 定时任务相关存储的db
+        rank = 10   # 榜单相关存储的db
+        cache = 11  # 缓存相关存储的db
 
 [etcd]
     endpoints = ["node10:2379"]
-    config = "config"
-    service = "seckill"
 
 [api]
     bind = "0.0.0.0:8080"

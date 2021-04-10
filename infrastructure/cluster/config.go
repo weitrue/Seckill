@@ -9,14 +9,15 @@ package cluster
 
 import (
 	"Seckill/infrastructure/stores/etcd"
+	"Seckill/infrastructure/utils"
 	"context"
 	"encoding/json"
+	"fmt"
 	"sync"
 
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
 type Config struct {
@@ -34,7 +35,7 @@ type Config struct {
 var (
 	configLock = &sync.RWMutex{}
 	config     = &Config{}
-	configKey  = viper.GetString("etcd.service") + "/" + viper.GetString("etcd.config")
+	configKey  = fmt.Sprintf("/%s/%s", utils.GetServiceName(), utils.GetConfigDir())
 )
 
 func GetClusterConfig() Config {

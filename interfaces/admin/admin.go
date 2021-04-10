@@ -39,7 +39,7 @@ func Run() error {
 	InitRouters(engine)
 
 	// TODO 加入集群
-	cluster.Init(viper.GetString("etcd.service"))
+	cluster.Init(utils.GetServiceName())
 	if nodes, err := cluster.Discover(); err == nil {
 		n, _ := json.Marshal(nodes)
 		logrus.Info("discover nodes ", string(n))
