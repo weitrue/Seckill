@@ -8,9 +8,7 @@
 package cmd
 
 import (
-	"Seckill/infrastructure/config/cluster"
 	"Seckill/infrastructure/stores/etcd"
-	"Seckill/infrastructure/stores/redis"
 	"fmt"
 	"os"
 
@@ -84,16 +82,11 @@ func initConfig() {
 	if err := etcd.Init(); err != nil {
 		panic(err)
 	}
-	logrus.Info("------------------ init redis ------------------")
-	// TODO redis初始化 v1.0
-	if err := redis.Init(); err != nil {
-		panic(err)
-	}
 	logrus.Info("------------------ init logger -------------------")
 	// logger.InitLogger()
 	logrus.Info("------------------ watch cluster ------------------")
 	// 监听集群配置信息
-	if err := cluster.WatchClusterConfig(); err != nil {
-		panic(err)
-	}
+	//if err := cluster.WatchClusterConfig(); err != nil {
+	//	panic(err)
+	//}
 }
