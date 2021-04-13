@@ -10,6 +10,7 @@ package api
 import (
 	"Seckill/domain/shop"
 	"Seckill/infrastructure/config"
+	"Seckill/infrastructure/stores/redis"
 	"Seckill/infrastructure/utils"
 	"net"
 	"time"
@@ -41,6 +42,11 @@ func Run() error {
 	// 初始化路由
 	initRouters(engine)
 
+	logrus.Info("------------------ init redis ------------------")
+	// TODO redis初始化 v1.0
+	if err := redis.Init(); err != nil {
+		panic(err)
+	}
 	pprof.Register(engine)
 	// TODO 初始化秒杀服务
 	shop.Init()

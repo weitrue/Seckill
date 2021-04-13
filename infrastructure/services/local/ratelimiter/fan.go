@@ -120,6 +120,7 @@ func (f *fanInOut) Close() error {
 			close(f.queueOut)
 		}
 	}
+	return nil
 }
 
 func (f *fanInOut) exchange() {

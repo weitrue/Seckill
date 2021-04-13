@@ -7,6 +7,8 @@
 
 package factories
 
+import "Seckill/infrastructure/mq/memory"
+
 var factoryMap = make(map[string]Factory)
 
 func NewFactory(fm string) Factory {
@@ -20,4 +22,8 @@ func Register(fm string, f Factory) {
 		panic("duplicate queue factories " + fm)
 	}
 	factoryMap[fm] = f
+}
+
+func init() {
+	Register("memory", FactoryFunc(memory.MQFactory))
 }

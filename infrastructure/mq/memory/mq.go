@@ -8,7 +8,6 @@
 package memory
 
 import (
-	"Seckill/infrastructure/factories"
 	"Seckill/infrastructure/mq"
 	"Seckill/infrastructure/pool/coroutine"
 	"Seckill/infrastructure/services/local/ratelimiter"
@@ -22,7 +21,7 @@ type memoryQueue struct {
 	queue ratelimiter.RateLimiter
 }
 
-func memoryQueueFactory(name string) (mq.Queue, error) {
+func MQFactory(name string) (mq.Queue, error) {
 	rate := viper.GetInt64(fmt.Sprintf("queue.%s.rate", name))
 	size := viper.GetInt64(fmt.Sprintf("queue.%s.size", name))
 	q, _ := ratelimiter.NewRateLimiter(size, rate, ratelimiter.FanIn)
@@ -46,8 +45,4 @@ func (mq *memoryQueue) Consume() (coroutine.Task, error) {
 
 func (mq *memoryQueue) Close() error {
 	return mq.queue.Close()
-}
-
-func init() {
-	factories.Register("memory", factories.FactoryFunc(memoryQueueFactory))
 }
