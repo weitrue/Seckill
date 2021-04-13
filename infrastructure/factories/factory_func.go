@@ -2,10 +2,10 @@
  * Author: Wang P
  * Version: 1.0.0
  * Date: 2021/4/13 下午7:35
- * Description: 工厂方法
+ * Description: 工厂方法 - 创建队列、创建消费者、创建生产者
  **/
 
-package mqfatory
+package factories
 
 import "Seckill/infrastructure/mq"
 

@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/coreos/etcd v3.3.25+incompatible
 	github.com/dustin/go-humanize v1.0.0 // indirect
-	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-redis/redis v6.15.9+incompatible
