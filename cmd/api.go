@@ -28,8 +28,9 @@ var apiCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		wg := &sync.WaitGroup{}
 		wg.Add(2)
-		//
+		// api退出信号通知chan
 		onApiExit := make(chan error, 1)
+		// rpc退出信号通知chan
 		onRpcExit := make(chan error, 1)
 		go func() {
 			defer wg.Done()
@@ -49,9 +50,9 @@ var apiCmd = &cobra.Command{
 			//
 			close(onRpcExit)
 		}()
-		// 优雅退出
-		// 监听退出chan
+		// 信号通知chan
 		onSignal := make(chan os.Signal)
+		// 优雅退出
 		// 监听指定信号 ctrl+c 结束程序(可以被捕获、阻塞或忽略)
 		signal.Notify(onSignal, syscall.SIGINT, syscall.SIGTERM)
 		select {

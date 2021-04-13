@@ -8,7 +8,9 @@
 package cmd
 
 import (
+	"Seckill/infrastructure/config/cluster"
 	"Seckill/infrastructure/stores/etcd"
+	"Seckill/infrastructure/stores/redis"
 	"fmt"
 	"os"
 
@@ -44,8 +46,10 @@ func Execute() {
 
 func init() {
 	// 设置initConfig在调用rootCmd的Execute()方法时运行
+	logrus.Info("------------------ init config -------------------")
 	cobra.OnInitialize(initConfig)
 	flags := rootCmd.PersistentFlags()
+	logrus.Info("------------------ find config -------------------")
 	flags.StringVarP(&cfgFile, "config", "c", "./config/Seckill.toml", "config file (default is $HOME/.Seckill.toml)")
 }
 
@@ -66,23 +70,30 @@ func initConfig() {
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".seckill")
 	}
-
+	logrus.Info("------------------ load env ----------------------")
 	viper.AutomaticEnv() // 读取匹配的环境变量
-
+	logrus.Info("------------------ load config -------------------")
 	// 读取找到的配置文件
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		logrus.Info("Using config file:", viper.ConfigFileUsed())
 	} else {
 		panic(err)
 	}
-
+	logrus.Info("------------------ init etcd ---------------------")
 	// 初始化 etcd 客户端连接
 	if err := etcd.Init(); err != nil {
 		panic(err)
 	}
-
-	//logger.InitLogger()
-	//if err := cluster.WatchClusterConfig(); err != nil {
-	//	panic(err)
-	//}
+	logrus.Info("------------------ init redis ------------------")
+	// TODO redis初始化 v1.0
+	if err := redis.Init(); err != nil {
+		panic(err)
+	}
+	logrus.Info("------------------ init logger -------------------")
+	// logger.InitLogger()
+	logrus.Info("------------------ watch cluster ------------------")
+	// 监听集群配置信息
+	if err := cluster.WatchClusterConfig(); err != nil {
+		panic(err)
+	}
 }

@@ -37,3 +37,4 @@
 [protocol]
     gRPC = "gRPC"
     http = "http"
+    tcp = "tcp"

@@ -31,7 +31,7 @@ func TestStock(t *testing.T) {
 	a.Nil(err)
 
 	defer func() {
-		c := redis.GetRedisClientByDB("cache")
+		c := redis.GetRedisClient(11)
 		c.Del("seckill:101:1001")
 		c.Del("seckill:101:1001:111")
 	}()
@@ -56,7 +56,7 @@ func TestStock(t *testing.T) {
 
 func TestNewRedisStock(t *testing.T) {
 	_ = redis.Init()
-	client := redis.GetRedisClientByDB(db)
+	client := redis.GetRedisClient(db)
 	script := `
 	return redis.call('get', 'seckill:101:1001')
 	`

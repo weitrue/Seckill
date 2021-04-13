@@ -13,6 +13,7 @@ package impl
 
 import (
 	"Seckill/domain/stock"
+	"Seckill/infrastructure/config/cluster"
 	"Seckill/infrastructure/stores/redis"
 	"Seckill/infrastructure/utils"
 	"errors"
@@ -21,7 +22,7 @@ import (
 )
 
 var (
-	db = "cache"
+	db = 11
 )
 
 type redisStack struct {
@@ -44,13 +45,19 @@ func NewRedisStock(activityID, goodsID string) (stock.Stock, error) {
 
 func (rs *redisStack) Set(val int64, expire int64) error {
 	// 设置库存
-	client := redis.GetRedisClientByDB(db)
+	if conf := cluster.GetClusterConfig(); &conf.RedisDB != nil {
+		db = conf.RedisDB.Cache
+	}
+	client := redis.GetRedisClient(db)
 	return client.Set(rs.key, val, time.Duration(expire)*time.Second).Err()
 }
 
 func (rs *redisStack) Get() (int64, error) {
 	// 获取库存
-	client := redis.GetRedisClientByDB(db)
+	if conf := cluster.GetClusterConfig(); &conf.RedisDB != nil {
+		db = conf.RedisDB.Cache
+	}
+	client := redis.GetRedisClient(db)
 	if val, err := client.Get(rs.key).Int64(); err != nil && err != redis.Nil {
 		return 0, err
 	} else {
@@ -60,7 +67,10 @@ func (rs *redisStack) Get() (int64, error) {
 
 func (rs *redisStack) Sub(uid string) (int64, error) {
 	// 基于lua脚本实现减库存的原子性操作
-	client := redis.GetRedisClientByDB(db)
+	if conf := cluster.GetClusterConfig(); &conf.RedisDB != nil {
+		db = conf.RedisDB.Cache
+	}
+	client := redis.GetRedisClient(db)
 	script := `
 	local history = redis.call('get', KEYS[1])
 	local stock = redis.call('get', KEYS[2])
@@ -87,7 +97,10 @@ func (rs *redisStack) Sub(uid string) (int64, error) {
 
 func (rs *redisStack) Del() error {
 	// 删除库存
-	client := redis.GetRedisClientByDB(db)
+	if conf := cluster.GetClusterConfig(); &conf.RedisDB != nil {
+		db = conf.RedisDB.Cache
+	}
+	client := redis.GetRedisClient(db)
 	return client.Del(rs.key).Err()
 }
 
