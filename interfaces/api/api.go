@@ -8,7 +8,8 @@
 package api
 
 import (
-	"Seckill/infrastructure/stores/redis"
+	"Seckill/domain/shop"
+	"Seckill/infrastructure/config"
 	"Seckill/infrastructure/utils"
 	"net"
 	"time"
@@ -27,27 +28,22 @@ var (
 func Run() error {
 	bind := viper.GetString("api.bind")
 	logrus.Info("run api server on ", bind)
-	listener, err = utils.Listen("tcp", bind)
+	listener, err = utils.Listen(utils.GetTcpNet(), bind)
 	if err != nil {
 		return err
 	}
 	engine := gin.New()
-	// TODO 更新程序， 给老版本发信号
+	// TODO 更新程序， 给老版本发信号 Done
+	utils.UpdateProcess("api")
 
-	// TODO redis初始化 v1.0
-	if err := redis.Init(); err != nil {
-		return err
-	}
-
-	// TODO 黑名单监控
-
+	// TODO 黑名单监控 Done
+	config.WatchBlacklistConfig()
 	// 初始化路由
 	initRouters(engine)
 
-	// TODO 初始化秒杀服务
-
 	pprof.Register(engine)
-
+	// TODO 初始化秒杀服务
+	shop.Init()
 	// 运行服务
 	return engine.RunListener(listener)
 }

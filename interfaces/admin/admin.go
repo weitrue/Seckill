@@ -8,7 +8,7 @@
 package admin
 
 import (
-	"Seckill/infrastructure/cluster"
+	"Seckill/infrastructure/config/cluster"
 	"Seckill/infrastructure/utils"
 	"encoding/json"
 	"net"
@@ -27,13 +27,14 @@ var (
 func Run() error {
 	bind := viper.GetString("admin.bind")
 	logrus.Info("run admin server on ", bind)
-	listener, err = utils.Listen("tcp", bind)
+	listener, err = utils.Listen(utils.GetTcpNet(), bind)
 	if err != nil {
 		return err
 	}
 
 	engine := gin.New()
-	// TODO 更新程序， 给老版本发信号
+	// TODO 更新程序， 给老版本发信号 v1.0
+	utils.UpdateProcess("admin")
 
 	//初始化路由
 	InitRouters(engine)

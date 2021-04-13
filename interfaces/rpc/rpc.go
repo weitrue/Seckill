@@ -10,7 +10,7 @@ package rpc
 import (
 	"Seckill/application/api"
 	"Seckill/application/api/rpc"
-	"Seckill/infrastructure/cluster"
+	"Seckill/infrastructure/config/cluster"
 	"Seckill/infrastructure/utils"
 	"sync"
 
@@ -29,7 +29,7 @@ var (
 func Run() error {
 	bind := viper.GetString("api.rpc")
 	logrus.Info("run RPC Server on ", bind)
-	listen, err := utils.Listen("tcp", bind)
+	listen, err := utils.Listen(utils.GetTcpNet(), bind)
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func Run() error {
 			node = &cluster.Node{
 				Addr:    addr,
 				Version: version,
-				Proto:   viper.GetString("protocol.gRPC"),
+				Proto:   viper.GetString(utils.GetGRPCNet()),
 			}
 			err = cluster.Register(node, viper.GetInt("api.ttl"))
 		})

@@ -14,10 +14,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func InitRouters(g *gin.Engine)  {
+func InitRouters(g *gin.Engine) {
 
 	// admin接口路由注册到gin中
-	logrus.Info("Init api routers")
+	logrus.Info("Init admin routers")
 	adminGroup := g.Group("/admin")
 	topicApp := admin.Topic{}
 	activityApp := admin.Activity{}

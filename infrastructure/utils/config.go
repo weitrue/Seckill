@@ -10,6 +10,7 @@ package utils
 import (
 	"fmt"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -18,13 +19,18 @@ func GetServiceName() string {
 	return viper.GetString("global.service")
 }
 
+func GetPid() string {
+	// 获取进程文件路径
+	return viper.GetString("global.pid")
+}
+
 func GetConfigDir() string {
 	// 获取etcd中服务配置根目录
 	return viper.GetString("global.config")
 }
 
 func GetRedisConfig() (dbMap map[string]int) {
-	// 获取redis不同db对应的
+	// 获取redis不同db对应的映射
 	tmpMap := viper.GetStringMap("redis.DB")
 	dbMap = make(map[string]int)
 	for k, val := range tmpMap {
@@ -39,8 +45,6 @@ func GetRedisConfig() (dbMap map[string]int) {
 			dbMap[k] = int(t)
 		case int64:
 			dbMap[k] = int(t)
-		//case bool:
-		//	continue
 		case float32:
 			dbMap[k] = int(t)
 		case float64:
@@ -56,8 +60,25 @@ func GetRedisConfig() (dbMap map[string]int) {
 		//case string:
 		//	continue
 		default:
-			fmt.Print("%v = %T\n", t, t)
+			logrus.Info(fmt.Sprintf("%v = %T", t, t))
 		}
 	}
 	return dbMap
+}
+
+func GetBlackListPath() string {
+	// 获取黑名单文件
+	return viper.GetString("blacklist.filePath")
+}
+
+func GetTcpNet() string {
+	return viper.GetString("protocol.tcp")
+}
+
+func GetHTTPNet() string {
+	return viper.GetString("protocol.http")
+}
+
+func GetGRPCNet() string {
+	return viper.GetString("protocol.gRPC")
 }
