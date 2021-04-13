@@ -18,7 +18,7 @@ import (
 
 var (
 	client    *redis.Client
-	clientMap map[string]*redis.Client
+	clientMap map[int]*redis.Client
 	Nil       = redis.Nil
 )
 
@@ -28,11 +28,19 @@ func Init() error {
 	if addr == "" {
 		addr = "127.0.0.0:6379"
 	}
-	// TODO for循环加载不同的db
-	dbMap := utils.GetRedisConfig()
-	clientMap = make(map[string]*redis.Client)
+	// TODO 初始化时 获取 etcd 上配置
+	var dbMap map[string]int
+	//if conf := cluster.GetClusterConfig(); &conf.RedisDB != nil {
+	//	data, _ := json.Marshal(&conf.RedisDB)
+	//	dbMap = make(map[string]int)
+	//	_ = json.Unmarshal(data, &dbMap)
+	//} else {
+	//
+	//}
+	dbMap = utils.GetRedisConfig()
+	clientMap = make(map[int]*redis.Client)
 
-	for key, val := range dbMap {
+	for _, val := range dbMap {
 		opt := &redis.Options{
 			Network: "tcp",
 			Addr:    addr,
@@ -43,17 +51,13 @@ func Init() error {
 		if client == nil {
 			return errors.New("init redis client failed")
 		}
-		clientMap[key] = client
+		clientMap[val] = client
 	}
 	fmt.Println(clientMap)
 	return nil
 }
 
-func GetRedisClient() *redis.Client {
-	return client
-}
-
-func GetRedisClientByDB(db string) *redis.Client {
+func GetRedisClient(db int) *redis.Client {
 	if client, ok := clientMap[db]; ok {
 		return client
 	}

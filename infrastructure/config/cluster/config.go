@@ -30,6 +30,12 @@ type Config struct {
 		Cpu     int `json:"cpu"`     // cpu使用率配置
 		Latency int `json:"latency"` // 请求延时，单位ms
 	} `json:"circuitBreaker"` // 熔断器配置
+	RedisDB struct {
+		Lock  int `json:"lock"`  // 锁使用db
+		Cron  int `json:"cron"`  // 定时任务使用db
+		Rank  int `json:"rank"`  // 排行榜使用db
+		Cache int `json:"cache"` // 缓存使用db
+	} `json:"redisDb"` // redis db
 }
 
 var (
@@ -37,6 +43,10 @@ var (
 	config     = &Config{}
 	configKey  = fmt.Sprintf("/%s/%s", utils.GetServiceName(), utils.GetConfigDir())
 )
+
+func InitClusterConfig() error {
+	return nil
+}
 
 func GetClusterConfig() Config {
 	// 获取当前配置信息 加锁为了避免获取的同时做了同步
