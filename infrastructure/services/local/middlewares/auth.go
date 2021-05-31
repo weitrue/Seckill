@@ -8,10 +8,11 @@
 package middlewares
 
 import (
-	"Seckill/domain/user"
-	"Seckill/infrastructure/utils"
 	"net/http"
 	"strings"
+
+	"github.com/weitrue/Seckill/domain/user"
+	"github.com/weitrue/Seckill/infrastructure/utils"
 
 	"github.com/gin-gonic/gin"
 )

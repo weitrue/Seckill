@@ -1,4 +1,4 @@
-module Seckill
+module github.com/weitrue/Seckill
 
 go 1.15
 

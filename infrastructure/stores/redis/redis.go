@@ -8,12 +8,12 @@
 package redis
 
 import (
-	"Seckill/infrastructure/utils"
 	"errors"
 	"fmt"
 
 	"github.com/go-redis/redis"
 	"github.com/spf13/viper"
+	"github.com/weitrue/Seckill/infrastructure/utils"
 )
 
 var (

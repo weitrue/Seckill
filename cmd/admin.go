@@ -8,10 +8,11 @@
 package cmd
 
 import (
-	"Seckill/interfaces/admin"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/weitrue/Seckill/interfaces/admin"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

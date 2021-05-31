@@ -8,9 +8,11 @@
 package cmd
 
 import (
-	"Seckill/infrastructure/stores/etcd"
 	"fmt"
 	"os"
+
+	"github.com/weitrue/Seckill/infrastructure/config/cluster"
+	"github.com/weitrue/Seckill/infrastructure/stores/etcd"
 
 	homedir "github.com/mitchellh/go-homedir"
 
@@ -86,7 +88,7 @@ func initConfig() {
 	// logger.InitLogger()
 	logrus.Info("------------------ watch cluster ------------------")
 	// 监听集群配置信息
-	//if err := cluster.WatchClusterConfig(); err != nil {
-	//	panic(err)
-	//}
+	if err := cluster.WatchClusterConfig(); err != nil {
+		panic(err)
+	}
 }

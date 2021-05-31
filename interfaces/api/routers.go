@@ -8,9 +8,9 @@
 package api
 
 import (
-	"Seckill/application/api"
-	"Seckill/infrastructure/services/local/circuitbreaker"
-	"Seckill/infrastructure/services/local/middlewares"
+	"github.com/weitrue/Seckill/application/api"
+	"github.com/weitrue/Seckill/infrastructure/services/local/circuitbreaker"
+	"github.com/weitrue/Seckill/infrastructure/services/local/middlewares"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"

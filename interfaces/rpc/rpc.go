@@ -8,11 +8,12 @@
 package rpc
 
 import (
-	"Seckill/application/api"
-	"Seckill/application/api/rpc"
-	"Seckill/infrastructure/config/cluster"
-	"Seckill/infrastructure/utils"
 	"sync"
+
+	"github.com/weitrue/Seckill/application/api"
+	"github.com/weitrue/Seckill/application/api/rpc"
+	"github.com/weitrue/Seckill/infrastructure/config/cluster"
+	"github.com/weitrue/Seckill/infrastructure/utils"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"

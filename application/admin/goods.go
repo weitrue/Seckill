@@ -8,8 +8,9 @@
 package admin
 
 import (
-	"Seckill/infrastructure/utils"
 	"net/http"
+
+	"github.com/weitrue/Seckill/infrastructure/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"

@@ -8,8 +8,9 @@
 package api
 
 import (
-	"Seckill/application/api/rpc"
 	"context"
+
+	"github.com/weitrue/Seckill/application/api/rpc"
 
 	"github.com/sirupsen/logrus"
 )

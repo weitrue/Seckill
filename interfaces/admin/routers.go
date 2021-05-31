@@ -8,7 +8,7 @@
 package admin
 
 import (
-	"Seckill/application/admin"
+	"github.com/weitrue/Seckill/application/admin"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"

@@ -27,10 +27,12 @@
 
 package ratelimiter
 
-import "Seckill/infrastructure/pool/coroutine"
+import (
+	"github.com/weitrue/Seckill/infrastructure/pool/worker/taski"
+)
 
 type RateLimiter interface {
-	Push(t coroutine.Task) bool  // 提供给生产者推送数据
-	Pop() (coroutine.Task, bool) // 提供给消费者消费数据
+	Push(t taski.Task) bool  // 提供给生产者推送数据
+	Pop() (taski.Task, bool) // 提供给消费者消费数据
 	Close() error                // 关闭限流器
 }

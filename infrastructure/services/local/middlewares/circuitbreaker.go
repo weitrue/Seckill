@@ -8,8 +8,9 @@
 package middlewares
 
 import (
-	"Seckill/infrastructure/services/local/circuitbreaker"
 	"net/http"
+
+	"github.com/weitrue/Seckill/infrastructure/services/local/circuitbreaker"
 
 	"github.com/gin-gonic/gin"
 )

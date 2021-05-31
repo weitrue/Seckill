@@ -8,13 +8,14 @@
 package cluster
 
 import (
-	"Seckill/infrastructure/stores/etcd"
 	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/weitrue/Seckill/infrastructure/stores/etcd"
 
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes"

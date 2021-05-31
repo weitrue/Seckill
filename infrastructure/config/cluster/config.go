@@ -8,12 +8,13 @@
 package cluster
 
 import (
-	"Seckill/infrastructure/stores/etcd"
-	"Seckill/infrastructure/utils"
 	"context"
 	"encoding/json"
 	"fmt"
 	"sync"
+
+	"github.com/weitrue/Seckill/infrastructure/stores/etcd"
+	"github.com/weitrue/Seckill/infrastructure/utils"
 
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
@@ -58,6 +59,7 @@ func GetClusterConfig() Config {
 func WatchClusterConfig() error {
 	// 监听集群配置DELETE和PUT事件，并即时同步到内存中
 	client := etcd.GetETCDClient()
+	fmt.Println("00000----------------------------", client)
 	resp, err := client.Get(context.Background(), configKey)
 	if err != nil {
 		return err

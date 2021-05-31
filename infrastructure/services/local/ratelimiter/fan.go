@@ -8,11 +8,12 @@
 package ratelimiter
 
 import (
-	"Seckill/infrastructure/pool/coroutine"
 	"errors"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/weitrue/Seckill/infrastructure/pool/worker/taski"
 )
 
 const (
@@ -24,8 +25,8 @@ const (
 
 type fanInOut struct {
 	sync.RWMutex
-	queueIn   chan coroutine.Task // 用于 Fan-In 模式的队列 queueIn
-	queueOut  chan coroutine.Task // 用于 Fan-Out 模式的队列 queueOut
+	queueIn   chan taski.Task // 用于 Fan-In 模式的队列 queueIn
+	queueOut  chan taski.Task // 用于 Fan-Out 模式的队列 queueOut
 	startTime int64               // 开始时间
 	rate      int64               // 流量速度 控制每次操作数据的时间间隔
 	duration  time.Duration
@@ -55,11 +56,11 @@ func NewRateLimiter(size, rate int64, mode int) (RateLimiter, error) {
 
 	if FanIn&mode != 0 {
 		// Fan-In队列
-		f.queueIn = make(chan coroutine.Task, size)
+		f.queueIn = make(chan taski.Task, size)
 	}
 	if FanOut&mode != 0 {
 		// Fan-Out队列
-		f.queueOut = make(chan coroutine.Task, size)
+		f.queueOut = make(chan taski.Task, size)
 	}
 	if mode == modeMask {
 		go f.exchange()
@@ -67,7 +68,7 @@ func NewRateLimiter(size, rate int64, mode int) (RateLimiter, error) {
 	return f, nil
 }
 
-func (f *fanInOut) Push(t coroutine.Task) bool {
+func (f *fanInOut) Push(t taski.Task) bool {
 	// 给生产者
 	if atomic.LoadInt64(&f.closed) == 1 {
 		// 已关闭 不能推给生产者
@@ -95,7 +96,7 @@ func (f *fanInOut) Push(t coroutine.Task) bool {
 	}
 }
 
-func (f *fanInOut) Pop() (coroutine.Task, bool) {
+func (f *fanInOut) Pop() (taski.Task, bool) {
 	// 出队给消费
 	if FanOut&f.mode != 0 {
 		// FanOut模式 直接消费队列

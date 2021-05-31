@@ -8,10 +8,11 @@
 package config
 
 import (
-	"Seckill/infrastructure/utils"
 	"bufio"
 	"os"
 	"sync"
+
+	"github.com/weitrue/Seckill/infrastructure/utils"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/sirupsen/logrus"

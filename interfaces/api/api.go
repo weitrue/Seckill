@@ -8,12 +8,13 @@
 package api
 
 import (
-	"Seckill/domain/shop"
-	"Seckill/infrastructure/config"
-	"Seckill/infrastructure/stores/redis"
-	"Seckill/infrastructure/utils"
 	"net"
 	"time"
+
+	"github.com/weitrue/Seckill/domain/shop"
+	"github.com/weitrue/Seckill/infrastructure/config"
+	"github.com/weitrue/Seckill/infrastructure/stores/redis"
+	"github.com/weitrue/Seckill/infrastructure/utils"
 
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"

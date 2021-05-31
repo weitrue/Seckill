@@ -8,11 +8,12 @@
 package admin
 
 import (
-	"Seckill/infrastructure/config/cluster"
-	"Seckill/infrastructure/utils"
 	"encoding/json"
 	"net"
 	"time"
+
+	"github.com/weitrue/Seckill/infrastructure/config/cluster"
+	"github.com/weitrue/Seckill/infrastructure/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"

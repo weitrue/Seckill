@@ -7,7 +7,7 @@
 
 package main
 
-import "Seckill/cmd"
+import "github.com/weitrue/Seckill/cmd"
 
 func main()  {
 	cmd.Execute()
