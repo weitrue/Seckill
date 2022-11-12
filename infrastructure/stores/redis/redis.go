@@ -13,7 +13,7 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/spf13/viper"
-	"github.com/weitrue/Seckill/infrastructure/utils"
+	"github.com/weitrue/Seckill/infrastructure/config"
 )
 
 var (
@@ -24,7 +24,7 @@ var (
 
 func Init() error {
 	addr := viper.GetString("redis.address")
-	//auth := viper.GetString("redis.auth")
+	// auth := viper.GetString("redis.auth")
 	if addr == "" {
 		addr = "127.0.0.0:6379"
 	}
@@ -37,7 +37,7 @@ func Init() error {
 	//} else {
 	//
 	//}
-	dbMap = utils.GetRedisConfig()
+	dbMap = config.GetRedisConfig()
 	clientMap = make(map[int]*redis.Client)
 
 	for _, val := range dbMap {

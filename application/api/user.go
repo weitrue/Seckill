@@ -10,13 +10,13 @@ package api
 import (
 	"net/http"
 
-	"github.com/weitrue/Seckill/infrastructure/utils"
+	"github.com/weitrue/Seckill/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-type User struct {}
+type User struct{}
 
 func (u User) Login(ctx *gin.Context) {
 	// 登录

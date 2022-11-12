@@ -10,17 +10,16 @@ package api
 import (
 	"net/http"
 
-	"github.com/weitrue/Seckill/infrastructure/utils"
+	"github.com/weitrue/Seckill/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-type Activity struct {
-	// 秒杀活动
+type Activity struct { // 秒杀活动
 }
 
-func (e *Activity)List(ctx *gin.Context)  {
+func (e *Activity) List(ctx *gin.Context) {
 	// 获取所有正在进行或者即将进行的活动
 
 	// response
@@ -34,7 +33,7 @@ func (e *Activity)List(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (e *Activity)Info(ctx *gin.Context)  {
+func (e *Activity) Info(ctx *gin.Context) {
 	// 产看某个商品的秒杀活动信息
 
 	// response
@@ -48,7 +47,7 @@ func (e *Activity)Info(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func(e *Activity)Subscribe(ctx *gin.Context)  {
+func (e *Activity) Subscribe(ctx *gin.Context) {
 	// 订阅某商品的活动开始通知
 
 	// response

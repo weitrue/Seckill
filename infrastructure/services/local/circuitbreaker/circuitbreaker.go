@@ -22,7 +22,7 @@ const (
 
 type CircuitBreaker struct {
 	totalCounter Counter // 请求计数器
-	failsCounter Counter //失败请求计数器
+	failsCounter Counter // 失败请求计数器
 
 	duration       int64 // 时间窗口
 	latencyLimit   int64 // 最大延迟限制

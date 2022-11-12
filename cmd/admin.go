@@ -12,10 +12,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/weitrue/Seckill/interfaces/admin"
-
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/weitrue/Seckill/interfaces/admin"
 )
 
 var adminCmd = &cobra.Command{

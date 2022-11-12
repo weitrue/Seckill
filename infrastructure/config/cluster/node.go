@@ -62,7 +62,7 @@ func (c *cluster) getNodeKey(node *Node) string {
 	return fmt.Sprintf("/%s/nodes/%s", c.service, id)
 }
 
-// 节点管理--Register注册节点,DeRegister注销节点,Discover发现节点
+// Register 节点管理--Register注册节点,DeRegister注销节点,Discover发现节点
 func Register(node *Node, ttl int) error {
 	// 注册节点信息到 etcd 并设置有效期
 	const minTTl = 2
@@ -157,7 +157,7 @@ func Discover() (output []*Node, err error) {
 			if len(k) > len(key) {
 				var node *Node
 				// 反序列化
-				json.Unmarshal(kv.Value, &node)
+				_ = json.Unmarshal(kv.Value, &node)
 				if node != nil {
 					c.Lock()
 					c.nodes[k] = node
@@ -179,7 +179,7 @@ func Discover() (output []*Node, err error) {
 						switch event.Type {
 						case clientv3.EventTypePut:
 							var node *Node
-							json.Unmarshal(event.Kv.Value, &node)
+							_ = json.Unmarshal(event.Kv.Value, &node)
 							if node != nil {
 								c.Lock()
 								c.nodes[k] = node

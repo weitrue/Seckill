@@ -11,19 +11,18 @@ import (
 	"net/http"
 
 	"github.com/weitrue/Seckill/domain/shop"
-	"github.com/weitrue/Seckill/domain/stock"
+	"github.com/weitrue/Seckill/domain/stock/redisstock"
 	"github.com/weitrue/Seckill/domain/user"
-	"github.com/weitrue/Seckill/infrastructure/utils"
+	"github.com/weitrue/Seckill/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-type Shop struct {
-	// 商品信息
+type Shop struct { // 商品信息
 }
 
-func (s *Shop)AddCart(ctx *gin.Context)  {
+func (s *Shop) AddCart(ctx *gin.Context) {
 	// 添加商品到购物车
 
 	// response
@@ -53,7 +52,13 @@ func (s *Shop)AddCart(ctx *gin.Context)  {
 	logrus.Info(params)
 
 	// 扣减内存缓存中的库存库存 用于初步获取资格
-	st, _ := stock.NewRedisStock(params.ActivityID, params.GoodsID)
+	st, err := redisstock.NewRedisStock(params.ActivityID, params.GoodsID)
+	if err != nil {
+		response.Msg = "internal server error"
+		status = http.StatusInternalServerError
+		ctx.JSON(status, response)
+		return
+	}
 	if s, _ := st.Sub(userInfo.UID); s < 0 {
 		response.Code = shop.ErrNoStock
 		response.Msg = "no stock"
@@ -62,8 +67,8 @@ func (s *Shop)AddCart(ctx *gin.Context)  {
 	}
 
 	// Hijack方法
-	conn, w, err1 := ctx.Writer.Hijack()
-	if err1 != nil {
+	conn, w, err := ctx.Writer.Hijack()
+	if err != nil {
 		response.Msg = "bad request"
 		status = http.StatusBadRequest
 		ctx.JSON(status, response)

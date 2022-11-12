@@ -17,13 +17,13 @@ import (
 )
 
 const (
+	// TokenPrefix token前缀
 	TokenPrefix = "Bearer "
+	// TokenHeader token key
 	TokenHeader = "Authorization"
 )
 
-var (
-	authKey = []byte("seckill2021")
-)
+var authKey = []byte("seckill2021")
 
 type Info struct {
 	UID        string `json:"uid"`
@@ -31,6 +31,7 @@ type Info struct {
 	ExpireTime int64  `json:"expireTime"`
 }
 
+// Auth 验证用户身份
 func Auth(token string) *Info {
 	// 从token提取用户信息
 	defer func() {
@@ -58,7 +59,7 @@ func Auth(token string) *Info {
 	return info
 }
 
-func Login(uid string, passwd string) (*Info, string) {
+func Login(uid, passwd string) (*Info, string) {
 	defer func() {
 		if err := recover(); err != nil {
 			logrus.Error(err)

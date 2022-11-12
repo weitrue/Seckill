@@ -10,17 +10,15 @@ package admin
 import (
 	"net/http"
 
-	"github.com/weitrue/Seckill/infrastructure/utils"
+	"github.com/weitrue/Seckill/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-type Goods struct {
+type Goods struct{}
 
-}
-
-func (g *Goods) Add(ctx *gin.Context)  {
+func (g *Goods) Add(ctx *gin.Context) {
 	// 创建专题
 
 	// response
@@ -34,7 +32,7 @@ func (g *Goods) Add(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (g *Goods) List(ctx *gin.Context)  {
+func (g *Goods) List(ctx *gin.Context) {
 	// 获取商品列表
 
 	// response
@@ -48,7 +46,7 @@ func (g *Goods) List(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (g *Goods) Get(ctx *gin.Context)  {
+func (g *Goods) Get(ctx *gin.Context) {
 	// 获取某个商品
 
 	// response
@@ -62,7 +60,7 @@ func (g *Goods) Get(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (g *Goods) Update(ctx *gin.Context)  {
+func (g *Goods) Update(ctx *gin.Context) {
 	// 修改某个商品
 
 	// response
@@ -76,7 +74,7 @@ func (g *Goods) Update(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (g *Goods) Delete(ctx *gin.Context)  {
+func (g *Goods) Delete(ctx *gin.Context) {
 	// 删除某个商品
 
 	// response

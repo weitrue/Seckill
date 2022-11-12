@@ -16,16 +16,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/weitrue/Seckill/domain/stock"
-	"github.com/weitrue/Seckill/infrastructure/factory"
-	"github.com/weitrue/Seckill/infrastructure/mq/mqi"
-	"github.com/weitrue/Seckill/infrastructure/pool/worker/taski"
-	"github.com/weitrue/Seckill/infrastructure/utils"
-
-	"github.com/sirupsen/logrus"
+	"github.com/weitrue/Seckill/domain/stock/memstock"
+	"github.com/weitrue/Seckill/infrastructure/mq"
+	"github.com/weitrue/Seckill/infrastructure/mq/factory"
+	"github.com/weitrue/Seckill/infrastructure/worker"
+	"github.com/weitrue/Seckill/pkg/utils"
 )
 
-var queue mqi.Queue
+var queue mq.Queue
 
 func Init() {
 	// 使用漏桶 限制下游redis消费速度
@@ -33,17 +31,6 @@ func Init() {
 	if queueFactory == nil {
 		panic("no memory queue factory")
 	}
-	queue, _ = queueFactory.New("shop")
-	go func() {
-		for {
-			task, err := queue.Consume()
-			if err != nil {
-				logrus.Error(err)
-				break
-			}
-			task.Do()
-		}
-	}()
 }
 
 const (
@@ -83,7 +70,7 @@ func Handle(ctx *Context) {
 			data.Code = ErrTimeout
 		} else {
 			// 扣减 Redis 库存
-			st, _ := stock.NewMemoryStock(ctx.EventID, ctx.GoodsID)
+			st, _ := memstock.NewMemoryStock(ctx.EventID, ctx.GoodsID)
 			if s, err := st.Sub(ctx.UID); err != nil {
 				data.Msg = err.Error()
 				data.Code = ErrRedis
@@ -111,5 +98,5 @@ func Handle(ctx *Context) {
 		ctx.Conn.Close()
 	}
 
-	queue.Produce(taski.TaskFunc(t))
+	queue.Produce(worker.QueueTaskFunc(t))
 }

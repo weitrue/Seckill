@@ -10,17 +10,15 @@ package admin
 import (
 	"net/http"
 
-	"github.com/weitrue/Seckill/infrastructure/utils"
+	"github.com/weitrue/Seckill/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-type Topic struct {
-	
-}
+type Topic struct{}
 
-func (t *Topic) Add(ctx *gin.Context)  {
+func (t *Topic) Add(ctx *gin.Context) {
 	// 创建专题
 
 	// response
@@ -34,7 +32,7 @@ func (t *Topic) Add(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (t *Topic) List(ctx *gin.Context)  {
+func (t *Topic) List(ctx *gin.Context) {
 	// 获取专题列表
 
 	// response
@@ -48,7 +46,7 @@ func (t *Topic) List(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (t *Topic) Get(ctx *gin.Context)  {
+func (t *Topic) Get(ctx *gin.Context) {
 	// 获取某个专题
 
 	// response
@@ -62,7 +60,7 @@ func (t *Topic) Get(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (t *Topic) Status(ctx *gin.Context)  {
+func (t *Topic) Status(ctx *gin.Context) {
 	// 获取某个专题状态：上线/下线
 
 	// response
@@ -76,7 +74,7 @@ func (t *Topic) Status(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (t *Topic) Update(ctx *gin.Context)  {
+func (t *Topic) Update(ctx *gin.Context) {
 	// 修改某个专题
 
 	// response
@@ -90,7 +88,7 @@ func (t *Topic) Update(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (t *Topic) Delete(ctx *gin.Context)  {
+func (t *Topic) Delete(ctx *gin.Context) {
 	// 删除某个专题
 
 	// response
@@ -103,4 +101,3 @@ func (t *Topic) Delete(ctx *gin.Context)  {
 	logrus.Info("Topic Delete")
 	ctx.JSON(status, response)
 }
-

@@ -10,20 +10,18 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/weitrue/Seckill/infrastructure/services/local/circuitbreaker"
-
 	"github.com/gin-gonic/gin"
+
+	"github.com/weitrue/Seckill/infrastructure/services/local/circuitbreaker"
 )
 
-func NewCircuitBreakMiddleware(cb *circuitbreaker.CircuitBreaker) gin.HandlerFunc {
+// CircuitBreakMiddleware 熔断器中间件
+func CircuitBreakMiddleware(cb *circuitbreaker.CircuitBreaker) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		allow := cb.Allow(func() bool {
 			ctx.Next()
-			if ctx.Writer.Status() >= http.StatusInternalServerError {
-				// 服务不可用时，返回请求处理结果为false
-				return false
-			}
-			return true
+			// 服务不可用时，返回请求处理结果为false
+			return ctx.Writer.Status() < http.StatusInternalServerError
 		})
 		if !allow {
 			ctx.AbortWithStatus(http.StatusServiceUnavailable)

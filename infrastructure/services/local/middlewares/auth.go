@@ -11,13 +11,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/weitrue/Seckill/domain/user"
-	"github.com/weitrue/Seckill/infrastructure/utils"
-
 	"github.com/gin-gonic/gin"
+
+	"github.com/weitrue/Seckill/domain/user"
+	"github.com/weitrue/Seckill/pkg/utils"
 )
 
-func NewAuthMiddleware(redirect bool) gin.HandlerFunc {
+// AuthMiddleware 身份校验中间件
+func AuthMiddleware(redirect bool) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var info *user.Info
 		// 获取请求头token

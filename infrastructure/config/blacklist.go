@@ -12,8 +12,6 @@ import (
 	"os"
 	"sync"
 
-	"github.com/weitrue/Seckill/infrastructure/utils"
-
 	"github.com/fsnotify/fsnotify"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -28,13 +26,15 @@ func init() {
 	blacklist.data = make(map[string]struct{})
 }
 
+// WatchBlacklistConfig 获取黑名单配置
 func WatchBlacklistConfig() {
 	v := viper.New()
-	v.SetConfigFile(utils.GetBlackListPath())
+	v.SetConfigFile(GetBlackListPath())
 	v.OnConfigChange(onBlacklistChange)
 	go v.WatchConfig()
 }
 
+// onBlacklistChange
 func onBlacklistChange(in fsnotify.Event) {
 	const writeOrCreateMask = fsnotify.Write | fsnotify.Create
 	if in.Op&writeOrCreateMask != 0 {
@@ -42,8 +42,9 @@ func onBlacklistChange(in fsnotify.Event) {
 	}
 }
 
+// updateBlacklist
 func updateBlacklist() {
-	blackListPath := utils.GetBlackListPath()
+	blackListPath := GetBlackListPath()
 	file, err := os.Open(blackListPath)
 	if err != nil {
 		logrus.Error(err)
@@ -64,6 +65,7 @@ func updateBlacklist() {
 	blacklist.Unlock()
 }
 
+// InBlacklist 判断是否在黑名单中
 func InBlacklist(uid string) bool {
 	blacklist.RLock()
 	_, ok := blacklist.data[uid]

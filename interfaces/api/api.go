@@ -11,15 +11,16 @@ import (
 	"net"
 	"time"
 
-	"github.com/weitrue/Seckill/domain/shop"
-	"github.com/weitrue/Seckill/infrastructure/config"
-	"github.com/weitrue/Seckill/infrastructure/stores/redis"
-	"github.com/weitrue/Seckill/infrastructure/utils"
-
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+
+	"github.com/weitrue/Seckill/domain/shop"
+	"github.com/weitrue/Seckill/infrastructure/config"
+	"github.com/weitrue/Seckill/infrastructure/stores/redis"
+	"github.com/weitrue/Seckill/interfaces/api/handler"
+	utils2 "github.com/weitrue/Seckill/pkg/utils"
 )
 
 var (
@@ -30,18 +31,19 @@ var (
 func Run() error {
 	bind := viper.GetString("api.bind")
 	logrus.Info("run api server on ", bind)
-	listener, err = utils.Listen(utils.GetTcpNet(), bind)
+	listener, err = utils2.Listen(config.GetTcpNet(), bind)
 	if err != nil {
 		return err
 	}
 	engine := gin.New()
 	// TODO 更新程序， 给老版本发信号 Done
-	utils.UpdateProcess("api")
+	utils2.UpdateProcess("api")
 
 	// TODO 黑名单监控 Done
 	config.WatchBlacklistConfig()
 	// 初始化路由
-	initRouters(engine)
+	handler.InitRouters(engine)
+	engine.Use(gin.Logger())
 
 	logrus.Info("------------------ init redis ------------------")
 	// TODO redis初始化 v1.0

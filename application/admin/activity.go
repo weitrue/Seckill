@@ -10,18 +10,15 @@ package admin
 import (
 	"net/http"
 
-	"github.com/weitrue/Seckill/infrastructure/utils"
+	"github.com/weitrue/Seckill/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-type Activity struct {
+type Activity struct{}
 
-}
-
-
-func (a *Activity) Add(ctx *gin.Context)  {
+func (a *Activity) Add(ctx *gin.Context) {
 	// 创建秒杀活动
 
 	// response
@@ -35,7 +32,7 @@ func (a *Activity) Add(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (a *Activity) List(ctx *gin.Context)  {
+func (a *Activity) List(ctx *gin.Context) {
 	// 获取秒杀活动列表
 
 	// response
@@ -49,7 +46,7 @@ func (a *Activity) List(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (a *Activity) Get(ctx *gin.Context)  {
+func (a *Activity) Get(ctx *gin.Context) {
 	// 获取某个秒杀活动
 
 	// response
@@ -63,7 +60,7 @@ func (a *Activity) Get(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (a *Activity) Status(ctx *gin.Context)  {
+func (a *Activity) Status(ctx *gin.Context) {
 	// 获取某个秒杀活动状态：上线/下线
 
 	// response
@@ -77,7 +74,7 @@ func (a *Activity) Status(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (a *Activity) Update(ctx *gin.Context)  {
+func (a *Activity) Update(ctx *gin.Context) {
 	// 修改某个秒杀活动
 
 	// response
@@ -91,7 +88,7 @@ func (a *Activity) Update(ctx *gin.Context)  {
 	ctx.JSON(status, response)
 }
 
-func (a *Activity) Delete(ctx *gin.Context)  {
+func (a *Activity) Delete(ctx *gin.Context) {
 	// 删除某个秒杀活动
 
 	// response
@@ -104,4 +101,3 @@ func (a *Activity) Delete(ctx *gin.Context)  {
 	logrus.Info("Topic Delete")
 	ctx.JSON(status, response)
 }
-

@@ -13,7 +13,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/weitrue/Seckill/infrastructure/pool/worker/taski"
+	"github.com/weitrue/Seckill/infrastructure/worker"
 )
 
 const (
@@ -25,10 +25,10 @@ const (
 
 type fanInOut struct {
 	sync.RWMutex
-	queueIn   chan taski.Task // 用于 Fan-In 模式的队列 queueIn
-	queueOut  chan taski.Task // 用于 Fan-Out 模式的队列 queueOut
-	startTime int64               // 开始时间
-	rate      int64               // 流量速度 控制每次操作数据的时间间隔
+	queueIn   chan worker.Task // 用于 Fan-In 模式的队列 queueIn
+	queueOut  chan worker.Task // 用于 Fan-Out 模式的队列 queueOut
+	startTime int64            // 开始时间
+	rate      int64            // 流量速度 控制每次操作数据的时间间隔
 	duration  time.Duration
 	closed    int64 // 状态：0表示开启，1表示关闭
 	mode      int
@@ -40,12 +40,15 @@ func NewRateLimiter(size, rate int64, mode int) (RateLimiter, error) {
 	if mode > modeMask || modeMask&mode == 0 {
 		return nil, errors.New("wrong flag")
 	}
+
 	if rate < minRate {
 		rate = minRate
 	}
+
 	if size < minSize {
 		size = minSize
 	}
+
 	f := &fanInOut{
 		startTime: 0,
 		rate:      rate,
@@ -56,30 +59,35 @@ func NewRateLimiter(size, rate int64, mode int) (RateLimiter, error) {
 
 	if FanIn&mode != 0 {
 		// Fan-In队列
-		f.queueIn = make(chan taski.Task, size)
+		f.queueIn = make(chan worker.Task, size)
 	}
+
 	if FanOut&mode != 0 {
 		// Fan-Out队列
-		f.queueOut = make(chan taski.Task, size)
+		f.queueOut = make(chan worker.Task, size)
 	}
+
 	if mode == modeMask {
 		go f.exchange()
 	}
+
 	return f, nil
 }
 
-func (f *fanInOut) Push(t taski.Task) bool {
+func (f *fanInOut) Push(t worker.Task) bool {
 	// 给生产者
 	if atomic.LoadInt64(&f.closed) == 1 {
 		// 已关闭 不能推给生产者
 		return false
 	}
+
 	f.RLock()
 	defer f.RUnlock()
 
 	if atomic.LoadInt64(&f.closed) == 1 {
 		return false
 	}
+
 	if FanIn&f.mode != 0 {
 		// FanIn模式 非阻塞推送任务到队列
 		select {
@@ -96,17 +104,17 @@ func (f *fanInOut) Push(t taski.Task) bool {
 	}
 }
 
-func (f *fanInOut) Pop() (taski.Task, bool) {
+func (f *fanInOut) Pop() (worker.Task, bool) {
 	// 出队给消费
 	if FanOut&f.mode != 0 {
 		// FanOut模式 直接消费队列
-		task, ok := <-f.queueOut
-		return task, ok
+		t, ok := <-f.queueOut
+		return t, ok
 	} else {
 		// FanIn模式 需要等待一段时间 再消费队列
 		f.sleep()
-		task, ok := <-f.queueIn
-		return task, ok
+		t, ok := <-f.queueIn
+		return t, ok
 	}
 }
 
@@ -130,7 +138,8 @@ func (f *fanInOut) exchange() {
 		f.sleep()
 		f.queueOut <- t
 	}
-	close(f.queueOut)
+
+	close(f.queueIn)
 }
 
 func (f *fanInOut) sleep() {
@@ -139,5 +148,6 @@ func (f *fanInOut) sleep() {
 	if delta > time.Millisecond {
 		time.Sleep(delta)
 	}
+
 	atomic.StoreInt64(&f.startTime, now)
 }

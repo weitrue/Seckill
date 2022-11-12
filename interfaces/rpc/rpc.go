@@ -12,8 +12,9 @@ import (
 
 	"github.com/weitrue/Seckill/application/api"
 	"github.com/weitrue/Seckill/application/api/rpc"
+	"github.com/weitrue/Seckill/infrastructure/config"
 	"github.com/weitrue/Seckill/infrastructure/config/cluster"
-	"github.com/weitrue/Seckill/infrastructure/utils"
+	utils2 "github.com/weitrue/Seckill/pkg/utils"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -30,7 +31,7 @@ var (
 func Run() error {
 	bind := viper.GetString("api.rpc")
 	logrus.Info("run RPC Server on ", bind)
-	listen, err := utils.Listen(utils.GetTcpNet(), bind)
+	listen, err := utils2.Listen(config.GetTcpNet(), bind)
 	if err != nil {
 		return err
 	}
@@ -40,9 +41,9 @@ func Run() error {
 	// 支持 gRPC reflection，方便调试
 	reflection.Register(grpcS)
 	// 初始化集群信息
-	cluster.Init(utils.GetServiceName())
+	cluster.Init(config.GetServiceName())
 	var addr string
-	if addr, err = utils.Extract(bind); err == nil {
+	if addr, err = utils2.Extract(bind); err == nil {
 		// 注册节点信息
 		version := viper.GetString("api.version")
 		if version == "" {
@@ -52,7 +53,7 @@ func Run() error {
 			node = &cluster.Node{
 				Addr:    addr,
 				Version: version,
-				Proto:   viper.GetString(utils.GetGRPCNet()),
+				Proto:   viper.GetString(config.GetGRPCNet()),
 			}
 			err = cluster.Register(node, viper.GetInt("api.ttl"))
 		})
@@ -67,5 +68,4 @@ func Run() error {
 func Exit() {
 	grpcS.GracefulStop()
 	logrus.Info("rpc server exit!")
-
 }

@@ -57,9 +57,14 @@ var apiCmd = &cobra.Command{
 		signal.Notify(onSignal, syscall.SIGINT, syscall.SIGTERM)
 		select {
 		case sig := <-onSignal:
-			logrus.Info("exit by signal ", sig)
-			api.Exit()
-			rpc.Exit()
+			switch sig {
+			case syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM:
+				logrus.Info("exit by signal ", sig)
+				api.Exit()
+				rpc.Exit()
+			default:
+
+			}
 		case err := <-onApiExit:
 			rpc.Exit()
 			logrus.Info("exit by error ", err)

@@ -13,12 +13,11 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/weitrue/Seckill/infrastructure/stores/etcd"
-	"github.com/weitrue/Seckill/infrastructure/utils"
-
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
 	"github.com/sirupsen/logrus"
+	config2 "github.com/weitrue/Seckill/infrastructure/config"
+	"github.com/weitrue/Seckill/infrastructure/stores/etcd"
 )
 
 type Config struct {
@@ -42,7 +41,7 @@ type Config struct {
 var (
 	configLock = &sync.RWMutex{}
 	config     = &Config{}
-	configKey  = fmt.Sprintf("/%s/%s", utils.GetServiceName(), utils.GetConfigDir())
+	configKey  = fmt.Sprintf("/%s/%s", config2.GetServiceName(), config2.GetConfigDir())
 )
 
 func InitClusterConfig() error {
@@ -59,7 +58,6 @@ func GetClusterConfig() Config {
 func WatchClusterConfig() error {
 	// 监听集群配置DELETE和PUT事件，并即时同步到内存中
 	client := etcd.GetETCDClient()
-	fmt.Println("00000----------------------------", client)
 	resp, err := client.Get(context.Background(), configKey)
 	if err != nil {
 		return err

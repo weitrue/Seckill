@@ -12,12 +12,13 @@ import (
 	"net"
 	"time"
 
-	"github.com/weitrue/Seckill/infrastructure/config/cluster"
-	"github.com/weitrue/Seckill/infrastructure/utils"
-
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"github.com/weitrue/Seckill/infrastructure/config"
+	"github.com/weitrue/Seckill/infrastructure/config/cluster"
+	"github.com/weitrue/Seckill/interfaces/admin/handler"
+	utils2 "github.com/weitrue/Seckill/pkg/utils"
 )
 
 var (
@@ -28,20 +29,20 @@ var (
 func Run() error {
 	bind := viper.GetString("admin.bind")
 	logrus.Info("run admin server on ", bind)
-	listener, err = utils.Listen(utils.GetTcpNet(), bind)
+	listener, err = utils2.Listen(config.GetTcpNet(), bind)
 	if err != nil {
 		return err
 	}
 
 	engine := gin.New()
 	// TODO 更新程序， 给老版本发信号 v1.0
-	utils.UpdateProcess("admin")
+	utils2.UpdateProcess("admin")
 
-	//初始化路由
-	InitRouters(engine)
+	// 初始化路由
+	handler.InitRouters(engine)
 
 	// TODO 加入集群
-	cluster.Init(utils.GetServiceName())
+	cluster.Init(config.GetServiceName())
 	if nodes, err := cluster.Discover(); err == nil {
 		n, _ := json.Marshal(nodes)
 		logrus.Info("discover nodes ", string(n))
