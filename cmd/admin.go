@@ -30,6 +30,7 @@ var adminCmd = &cobra.Command{
 			}
 			close(onExit)
 		}()
+		
 		onSignal := make(chan os.Signal)
 		signal.Notify(onSignal, syscall.SIGINT, syscall.SIGTERM)
 		select {
@@ -42,6 +43,6 @@ var adminCmd = &cobra.Command{
 	},
 }
 
-func init()  {
+func init() {
 	rootCmd.AddCommand(adminCmd)
 }
