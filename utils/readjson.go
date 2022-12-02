@@ -12,7 +12,7 @@ import (
 )
 
 func ReadSnapshot() map[string]int64 {
-	filePtr, err := os.OpenFile("/Users/pony/Projects/go/src/Seckill/utils/snapshot-1665705774.json", os.O_RDONLY, 0)
+	filePtr, err := os.OpenFile("/Users/pony/Projects/go/src/Seckill/utils/20221120/snapshot.json", os.O_RDONLY, 0)
 	if err != nil {
 		fmt.Println("文件打开失败", err.Error())
 		return nil
@@ -36,7 +36,7 @@ func ReadSnapshot() map[string]int64 {
 }
 
 func ReadWhitelist() map[string]int64 {
-	filePtr, err := os.OpenFile("/Users/pony/Projects/go/src/Seckill/utils/whitelist.json", os.O_RDONLY, 0)
+	filePtr, err := os.OpenFile("/Users/pony/Projects/go/src/Seckill/utils/20221120/whitelist.json", os.O_RDONLY, 0)
 	if err != nil {
 		fmt.Println("文件打开失败", err.Error())
 		return nil
@@ -60,7 +60,7 @@ func ReadWhitelist() map[string]int64 {
 }
 
 func ReadTargetSnapshot() map[string]int64 {
-	filePtr, err := os.OpenFile("/Users/pony/Projects/go/src/Seckill/utils/snapshot.prod.json", os.O_RDONLY, 0)
+	filePtr, err := os.OpenFile("/Users/pony/Projects/go/src/Seckill/utils/20221120/snapshot.prod.json", os.O_RDONLY, 0)
 	if err != nil {
 		fmt.Println("文件打开失败", err.Error())
 		return nil
@@ -95,6 +95,9 @@ func GenerateTargetList(total int64) {
 	randomList := make([]string, 0)
 	for k, v := range snapshot {
 		if _, ok := whitelist[k]; !ok {
+			if v >= 50 {
+				fmt.Println(k, v)
+			}
 			for ; v > 0; v-- {
 				randomList = append(randomList, k)
 			}
@@ -102,7 +105,6 @@ func GenerateTargetList(total int64) {
 	}
 
 	for i := int64(0); i < total-whitelistNum; i++ {
-		fmt.Println(len(randomList))
 		rand := math.RandInt(0, len(randomList))
 		if v, ok := targetMap[randomList[rand]]; ok {
 			targetMap[randomList[rand]] = v + 1
@@ -123,7 +125,7 @@ func GenerateTargetList(total int64) {
 	if err != nil {
 		panic(err)
 	}
-	file, err := os.OpenFile("./snapshot.prod.json", os.O_WRONLY|os.O_CREATE, 0666)
+	file, err := os.OpenFile("/Users/pony/Projects/go/src/Seckill/utils/20221120/snapshot.prod.json", os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		fmt.Println(string(str))
 		panic(err)

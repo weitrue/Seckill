@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Contract = "0x1f9c5be14b5d2ae7e467edce447a8ef6929b7d9d"
+	Contract = "0xAeef2b7D89b609b2890e10413D13177fC9301Ee6"
 )
 
 type ContractSnail struct {

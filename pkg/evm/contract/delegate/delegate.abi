@@ -1,0 +1,53 @@
+[
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256[]",
+              "name": "tokenIDs",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint256",
+              "name": "chainID",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "fusionContract",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "r",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "s",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint8",
+              "name": "v",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct Delegate.fusionSignInfo",
+          "name": "signInfo",
+          "type": "tuple"
+        }
+      ],
+      "name": "verifySignature",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+ ]

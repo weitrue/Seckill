@@ -12,7 +12,7 @@ import "github.com/weitrue/Seckill/utils"
 func main() {
 	//cmd.Execute()
 	//utils.CreateXlsx()
-	utils.WritePubPriFromXlsx()
-	//utils.GenerateTargetList(5000)
-	//utils.CheckTargetList()
+	//utils.WritePubPriFromXlsx()
+	//utils.GenerateTargetList(7075)
+	utils.GenerateData("")
 }

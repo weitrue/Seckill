@@ -30,17 +30,17 @@ type Config struct {
 // GetDefaultConfig 获取默认HTTP客户端相关配置
 func GetDefaultConfig() *Config {
 	return &Config{
-		HTTPTimeout:           20 * time.Second,
-		DialTimeout:           15 * time.Second,
-		DialKeepAlive:         30 * time.Second,
+		HTTPTimeout:           60 * time.Second,
+		DialTimeout:           50 * time.Second,
+		DialKeepAlive:         60 * time.Second,
 		MaxIdleConns:          100,
 		MaxIdleConnsPerHost:   100,
 		MaxConnsPerHost:       100,
 		IdleConnTimeout:       60 * time.Second,
 		ResponseHeaderTimeout: 10 * time.Second,
 		ExpectContinueTimeout: 5 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ForceAttemptHTTP2:     true,
+		TLSHandshakeTimeout:   20 * time.Second,
+		ForceAttemptHTTP2:     false,
 	}
 }
 
@@ -63,7 +63,7 @@ func NewHTTPClient(c *Config) *http.Client {
 		ResponseHeaderTimeout: c.ResponseHeaderTimeout,
 		ExpectContinueTimeout: c.ExpectContinueTimeout,
 		TLSHandshakeTimeout:   c.TLSHandshakeTimeout,
-		ForceAttemptHTTP2:     c.ForceAttemptHTTP2,
+		ForceAttemptHTTP2:     false,
 	}
 
 	client := &http.Client{

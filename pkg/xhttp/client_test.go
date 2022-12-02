@@ -2,14 +2,19 @@ package xhttp
 
 import (
 	"bytes"
+	"crypto/ecdsa"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/csv"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/weitrue/Seckill/pkg/utils/convert"
 	"io"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -239,16 +244,55 @@ func TestClient_Call(t *testing.T) {
 }
 
 func TestRefreshMetadata(t *testing.T) {
-	api := "https://www.nswap.network/api/multi-chain/10001/item/refresh"
-	client := NewDefaultClient()
+	api := "https://dev.nswap.works/api/multi-chain/56/collection/refresh/0xAeef2b7D89b609b2890e10413D13177fC9301Ee6"
 	var cr CommonResp
 	body := make(map[string]interface{})
 	body["chain"] = 1
 	body["address"] = "0xDF557AB50FE8476125fE382e55A02Fa7593089ac"
-	end := 50728
-	for start := 1; start <= end; start++ {
+	tokenIds := []int{108, 139, 155, 260, 274, 369, 412, 418, 467, 613, 621, 640, 722, 737, 745, 756, 701, 858, 862, 714, 735, 907, 908, 914, 893, 171, 191, 193, 305, 309, 317, 511, 528, 607, 717, 721, 952, 981, 1006, 809, 1126, 1140, 1161, 78, 92, 223, 231, 351, 352, 354, 355, 371, 904, 1099, 1191, 73, 93, 280, 296, 798, 940, 1101, 766, 196, 372, 731, 746, 720, 982, 134, 150, 262, 273, 214, 228, 303, 306, 368, 656, 661, 620, 912, 922, 672, 715, 1051, 1225, 1227, 810, 815, 39, 56, 167, 170, 204, 208, 361, 367, 545, 551, 562, 602, 605, 614, 556, 558, 742, 757, 869, 897, 900, 1078, 1134, 1153, 1245, 66, 79, 82, 729, 823, 969, 990, 1172, 363, 698, 540, 818, 548, 345, 901, 831, 1226, 19, 29, 140, 154, 156, 162, 88, 283, 225, 310, 313, 477, 482, 337, 344, 346, 517, 356, 357, 530, 485, 700, 505, 506, 739, 871, 874, 632, 970, 1014, 1028, 1171, 761, 1194, 45, 58, 216, 226, 314, 376, 563, 617, 550, 557, 903, 913, 622, 630, 1068, 1080, 1114, 1221, 1224, 75, 83, 377, 378, 993, 994, 655, 30, 141, 168, 190, 197, 320, 325, 340, 349, 480, 504, 507, 669, 688, 693, 702, 894, 899, 917, 995, 1005, 1027, 1130, 207, 217, 220, 365, 230, 510, 514, 515, 523, 547, 629, 1037, 1049, 1163, 80, 222, 233, 604, 627, 728, 976, 1092, 1248, 623, 133, 138, 144, 166, 172, 182, 279, 281, 210, 213, 439, 336, 343, 444, 456, 518, 531, 634, 538, 542, 765, 767, 866, 876, 822, 886, 919, 928, 949, 719, 67, 205, 308, 516, 522, 527, 544, 730, 755, 827, 91, 97, 353, 366, 816, 819, 820, 826}
+	for _, start := range tokenIds {
+		//body["token_id"] = convert.ToString(start)
+		//byt, _ := json.Marshal(body)
+		client := NewClientWithHTTPClient(http.DefaultClient)
+		err := client.Call("POST", fmt.Sprintf("%s/%d", api, start), nil, nil, &cr)
+		if err != nil {
+		}
+
+		t.Log(start, cr.Code, cr.Msg, err)
+	}
+}
+
+func TestRefreshMetadataByConfig(t *testing.T) {
+	var cr CommonResp
+	body := make(map[string]interface{})
+	body["chain"] = 1
+	body["address"] = "0xDF557AB50FE8476125fE382e55A02Fa7593089ac"
+	//tokenIds := []int{108, 139, 155, 260, 274, 369, 412, 418, 467, 613, 621, 640, 722, 737, 745, 756, 701, 858, 862, 714, 735, 907, 908, 914, 893, 171, 191, 193, 305, 309, 317, 511, 528, 607, 717, 721, 952, 981, 1006, 809, 1126, 1140, 1161, 78, 92, 223, 231, 351, 352, 354, 355, 371, 904, 1099, 1191, 73, 93, 280, 296, 798, 940, 1101, 766, 196, 372, 731, 746, 720, 982, 134, 150, 262, 273, 214, 228, 303, 306, 368, 656, 661, 620, 912, 922, 672, 715, 1051, 1225, 1227, 810, 815, 39, 56, 167, 170, 204, 208, 361, 367, 545, 551, 562, 602, 605, 614, 556, 558, 742, 757, 869, 897, 900, 1078, 1134, 1153, 1245, 66, 79, 82, 729, 823, 969, 990, 1172, 363, 698, 540, 818, 548, 345, 901, 831, 1226, 19, 29, 140, 154, 156, 162, 88, 283, 225, 310, 313, 477, 482, 337, 344, 346, 517, 356, 357, 530, 485, 700, 505, 506, 739, 871, 874, 632, 970, 1014, 1028, 1171, 761, 1194, 45, 58, 216, 226, 314, 376, 563, 617, 550, 557, 903, 913, 622, 630, 1068, 1080, 1114, 1221, 1224, 75, 83, 377, 378, 993, 994, 655, 30, 141, 168, 190, 197, 320, 325, 340, 349, 480, 504, 507, 669, 688, 693, 702, 894, 899, 917, 995, 1005, 1027, 1130, 207, 217, 220, 365, 230, 510, 514, 515, 523, 547, 629, 1037, 1049, 1163, 80, 222, 233, 604, 627, 728, 976, 1092, 1248, 623, 133, 138, 144, 166, 172, 182, 279, 281, 210, 213, 439, 336, 343, 444, 456, 518, 531, 634, 538, 542, 765, 767, 866, 876, 822, 886, 919, 928, 949, 719, 67, 205, 308, 516, 522, 527, 544, 730, 755, 827, 91, 97, 353, 366, 816, 819, 820, 826}
+	//tokenIdsV3 := []int{825, 926, 930, 830, 932, 945, 927, 882}
+	tokenIdV4 := []int{7, 1015, 1028}
+	for _, start := range tokenIdV4 {
+		//body["token_id"] = convert.ToString(start)
+		//byt, _ := json.Marshal(body)
+		client := NewClientWithHTTPClient(http.DefaultClient)
+		err := client.Call("POST", fmt.Sprintf("https://www.nswap.works/api/multi-chain/56/item/lucci/%d/refresh", start), nil, nil, &cr)
+		if err != nil {
+		}
+
+		t.Log(start, cr.Code, cr.Msg, err)
+	}
+}
+
+func TestRefreshMetadata2(t *testing.T) {
+	api := "https://www.nswap.network/api/multi-chain/10001/item/refresh"
+	var cr CommonResp
+	body := make(map[string]interface{})
+	body["chain"] = 1
+	body["address"] = "0xd06521CAD27513a8E635e9933C94Cd9F84472914"
+	end := 1810
+	for start := 840; start <= end; start++ {
 		body["token_id"] = convert.ToString(start)
 		byt, _ := json.Marshal(body)
+		client := NewClientWithHTTPClient(http.DefaultClient)
 		err := client.Call("POST", api, nil, strings.NewReader(string(byt)), &cr)
 		if err != nil {
 		}
@@ -258,16 +302,17 @@ func TestRefreshMetadata(t *testing.T) {
 }
 
 func TestRefreshMetadataFromCsv(t *testing.T) {
-	api := "https://www.nswap.network/api/multi-chain/10001/item/refresh"
-	client := NewDefaultClient()
+	api := "https://www.nswap.works/api/multi-chain/56/item/refresh"
+	//api := "https://www.nswap.works/api/v2/launchpad/refresh/0xfE542c1FEcc88f1d8B0E53171B8E4d486391fb98"
 	var cr CommonResp
 	body := make(map[string]interface{})
 	body["chain"] = 1
-	body["address"] = "0xF6EAC0712c52433451a6BBCF0eF576fa7e44bCe1"
+	body["address"] = "0xBC867E76D1360b2D21eB1C2753f94b1C103415e1"
 	result := GetFromCsv()
 	for _, tokenId := range result {
 		body["token_id"] = tokenId
 		byt, _ := json.Marshal(body)
+		client := NewDefaultClient()
 		_ = client.Call("POST", api, nil, strings.NewReader(string(byt)), &cr)
 
 		t.Log(tokenId, cr.Code, cr.Msg)
@@ -296,4 +341,58 @@ func GetFromCsv() []string {
 	}
 
 	return result
+}
+
+type LeggiMsg struct {
+	Address  string   `json:"address"`
+	TokenIDs []string `json:"tokenIDs"`
+	ChainID  int64    `json:"chainID"`
+}
+
+func TestName(t *testing.T) {
+
+	leggiMsg := LeggiMsg{
+		Address:  "0xfE542c1FEcc88f1d8B0E53171B8E4d486391fb98",
+		TokenIDs: []string{"1", "2", "3", "4", "5", "6"},
+		ChainID:  56,
+	}
+
+	byt, err := json.Marshal(leggiMsg)
+	if err != nil {
+		t.Log(err)
+	}
+
+	privateKey, err := crypto.HexToECDSA("ad37fd4de7ef09a2fc47cc3a6041e28415108cd08608519035af47ec86958eb5")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
+	}
+
+	publicKeyBytes := crypto.FromECDSAPub(publicKeyECDSA)
+
+	hash := crypto.Keccak256Hash(byt)
+	fmt.Println(hash.Hex()) // 0xeaf5dbb5ba2041c036919d3e00d112693bbede54d745230cc4d548316371a760
+
+	signature, err := crypto.Sign(hash.Bytes(), privateKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(hexutil.Encode(signature)) // 0x751096364b009ae90540368095310e273965e583f48a2b5a4c5d723618b861e24a528564fb6e355e596c8977c0b9ba522cf2ceb142728926887235273757e7da01
+	sigPublicKey, err := crypto.Ecrecover(hash.Bytes(), signature)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	matches := bytes.Equal(sigPublicKey, publicKeyBytes)
+	fmt.Println(matches) // true
+
+	signatureNoRecoverID := signature[:len(signature)-1] // remove recovery id
+	verified := crypto.VerifySignature(publicKeyBytes, hash.Bytes(), signatureNoRecoverID)
+	fmt.Println(verified, string(signatureNoRecoverID)) // true
 }
