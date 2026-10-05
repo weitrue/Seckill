@@ -1,6 +1,10 @@
 package jwt
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -68,4 +72,24 @@ func TestJWT_ParseToken(t *testing.T) {
 	if assert.Equal(t, token, parseToken) {
 		t.Logf("%+v", parseToken)
 	}
+}
+
+func TestName(t *testing.T) {
+	dd := Md5Buf([]byte(TrimBearer("IY55z9Boy2kBjatl41NH7Bent1yXRESgKjWbqeHehMo=")))
+	fmt.Println(dd)
+}
+
+func Md5Buf(buf []byte) string {
+	hashMd5 := md5.New()
+	hashMd5.Write(buf)
+	//return fmt.Sprintf("%x", hashMd5.Sum(nil))
+	return hex.EncodeToString(hashMd5.Sum(nil))
+}
+
+func TrimBearer(token string) string {
+	token = strings.TrimSpace(token)
+	if len(token) >= 7 && strings.EqualFold(token[:7], "Bearer ") {
+		token = strings.TrimSpace(token[7:])
+	}
+	return token
 }

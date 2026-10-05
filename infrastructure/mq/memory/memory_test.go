@@ -51,10 +51,10 @@ func Test_memoryQueue_Close(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mq := &memoryQueue{
+			m := &memoryQueue{
 				queue: tt.fields.queue,
 			}
-			if err := mq.Close(); (err != nil) != tt.wantErr {
+			if err := m.Close(); (err != nil) != tt.wantErr {
 				t.Errorf("Close() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -75,10 +75,10 @@ func Test_memoryQueue_Consume(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mq := &memoryQueue{
+			m := &memoryQueue{
 				queue: tt.fields.queue,
 			}
-			got, err := mq.Consume()
+			got, err := m.Consume()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Consume() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -107,70 +107,12 @@ func Test_memoryQueue_Produce(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mq := &memoryQueue{
+			m := &memoryQueue{
 				queue: tt.fields.queue,
 			}
-			if err := mq.Produce(tt.args.task); (err != nil) != tt.wantErr {
+			if err := m.Produce(tt.args.task); (err != nil) != tt.wantErr {
 				t.Errorf("Produce() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
 }
-
-func Test_memoryQueue_Publish(t *testing.T) {
-	type fields struct {
-		queue ratelimiter.RateLimiter
-	}
-	type args struct {
-		topic string
-		body  []byte
-		reqID string
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			mq := &memoryQueue{
-				queue: tt.fields.queue,
-			}
-			if err := mq.Publish(tt.args.topic, tt.args.body, tt.args.reqID); (err != nil) != tt.wantErr {
-				t.Errorf("Publish() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
-
-// func Test_memoryQueue_Subscribe(t *testing.T) {
-// 	type fields struct {
-// 		queue ratelimiter.RateLimiter
-// 	}
-// 	type args struct {
-// 		topic     string
-// 		queueName string
-// 		fn        mq.MsgCb
-// 	}
-// 	tests := []struct {
-// 		name    string
-// 		fields  fields
-// 		args    args
-// 		wantErr bool
-// 	}{
-// 		// TODO: Add test cases.
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			mq := &memoryQueue{
-// 				queue: tt.fields.queue,
-// 			}
-// 			if err := mq.Subscribe(tt.args.topic, tt.args.queueName, tt.args.fn); (err != nil) != tt.wantErr {
-// 				t.Errorf("Subscribe() error = %v, wantErr %v", err, tt.wantErr)
-// 			}
-// 		})
-// 	}
-// }
