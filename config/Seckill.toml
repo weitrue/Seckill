@@ -33,6 +33,16 @@
 [blacklist]
     filePath = "./blacklist.txt"
 
+# 队列配置: 对应 infrastructure/mq 和 domain/shop
+# 读取路径为 queue.<name>.*,<name> 对应代码里的队列标识(如 shop)
+[queue]
+    [queue.shop]
+        # memory 漏桶参数(infrastructure/mq/memory 读取)
+        rate = 2000        # 每秒最多消费这么多任务(下游 Redis 保护阀门)
+        size = 50000       # 入口队列缓冲(瞬时能接住多少请求,再多会 Produce 失败)
+        # worker 协程池参数(domain/shop 读取)
+        workerNum = 64     # 并发消费协程数
+        workerSize = 2048  # worker 池 chan 缓冲
 
 [protocol]
     gRPC = "gRPC"

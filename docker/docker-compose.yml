@@ -1,0 +1,74 @@
+# Seckill 本地依赖:只起 Redis / etcd / MySQL,Seckill 二进制在宿主机跑
+# 用法:
+#   启动:  cd docker && docker compose up -d
+#   停止:  cd docker && docker compose down
+#   日志:  docker compose logs -f redis etcd mysql
+# 端口与 config/Seckill.toml 对齐: redis:6379 / etcd:2379 / mysql:3306
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: seckill_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+
+  etcd:
+    image: bitnami/etcd:3.5
+    container_name: seckill_etcd
+    restart: unless-stopped
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_INITIAL_CLUSTER=default=http://0.0.0.0:2380
+    volumes:
+      - etcd_data:/bitnami/etcd
+    healthcheck:
+      test: ["CMD", "etcdctl", "--endpoints=http://127.0.0.1:2379", "endpoint", "health"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+
+  mysql:
+    image: mysql:8.0
+    container_name: seckill_mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "123123"      # 对齐 config/Seckill.toml 的 mysql.password
+      MYSQL_DATABASE: "seckill"          # 对齐 config/Seckill.toml 的 mysql.database
+      TZ: Asia/Shanghai
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p123123"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  redis_data:
+  etcd_data:
+  mysql_data:

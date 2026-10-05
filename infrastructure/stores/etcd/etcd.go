@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	etcd "github.com/coreos/etcd/clientv3"
 	"github.com/spf13/viper"
+	etcd "go.etcd.io/etcd/client/v3"
 )
 
 var (

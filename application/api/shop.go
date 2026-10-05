@@ -11,7 +11,7 @@ import (
 	"net/http"
 
 	"github.com/weitrue/Seckill/domain/shop"
-	"github.com/weitrue/Seckill/domain/stock/redisstock"
+	"github.com/weitrue/Seckill/domain/stock/memstock"
 	"github.com/weitrue/Seckill/domain/user"
 	"github.com/weitrue/Seckill/pkg/utils"
 
@@ -51,15 +51,24 @@ func (s *Shop) AddCart(ctx *gin.Context) {
 	}
 	logrus.Info(params)
 
-	// 扣减内存缓存中的库存库存 用于初步获取资格
-	st, err := redisstock.NewRedisStock(params.ActivityID, params.GoodsID)
+	// 内存预扣: 快速过滤明显超额的请求,减轻下游 Redis 压力
+	// 允许过度预扣(多实例独立 + 懒加载偏差),真实源以 Redis Lua 为准
+	st, err := memstock.NewMemoryStock(params.ActivityID, params.GoodsID)
 	if err != nil {
 		response.Msg = "internal server error"
 		status = http.StatusInternalServerError
 		ctx.JSON(status, response)
 		return
 	}
-	if s, _ := st.Sub(userInfo.UID); s < 0 {
+	if s, subErr := st.Sub(userInfo.UID); subErr != nil {
+		// 冷启动从 redis 拉库存失败,属于内部错误
+		logrus.Errorf("logType:ShopAddCart, err:%s, step:memstock init, activityID:%s, goodsID:%s, uid:%s",
+			subErr.Error(), params.ActivityID, params.GoodsID, userInfo.UID)
+		response.Msg = "internal server error"
+		status = http.StatusInternalServerError
+		ctx.JSON(status, response)
+		return
+	} else if s < 0 {
 		response.Code = shop.ErrNoStock
 		response.Msg = "no stock"
 		ctx.JSON(http.StatusOK, response)

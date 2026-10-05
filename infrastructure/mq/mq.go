@@ -2,81 +2,55 @@
  * Author: Wang P
  * Version: 1.0.0
  * Date: 2021/4/13 下午6:35
- * Description:
+ * Description: mq 顶层接口定义
+ *   - MQ:       所有队列实现的共同能力(Close)
+ *   - Queue:    本地任务队列,Produce/Consume worker.Task(如 memory)
+ *   - PubSub:   第三方发布订阅队列,Publish/Subscribe []byte(如 kafka / rabbitmq)
+ *   具体实现放在同级子包: memory / kafka / rabbitmq
+ *   工厂(统一创建入口)放在 factory 子包
  **/
 
 package mq
 
 import (
-	"errors"
 	"io"
 
-	"github.com/weitrue/Seckill/infrastructure/mq/kafka"
-	"github.com/weitrue/Seckill/infrastructure/mq/memory"
 	"github.com/weitrue/Seckill/infrastructure/worker"
 )
 
-type Queue interface {
-	LocalQueue
+// MQ 所有队列实现的共同能力
+type MQ interface {
 	io.Closer
 }
 
-type LocalQueue interface {
-	Producer
-	Consumer
-}
-
-type Producer interface { // 生产者
+// Queue 本地任务队列: 进程内 Produce/Consume worker.Task
+type Queue interface {
+	MQ
 	Produce(task worker.Task) error
-}
-
-type Consumer interface { // 消费者
 	Consume() (worker.Task, error)
 }
 
-// ThirdQueue 第三方mq
-type ThirdQueue interface {
-	ThirdProducer
-	ThirdConsumer
-}
-
-type ThirdProducer interface {
+// PubSub 第三方发布订阅队列: Publish/Subscribe []byte
+type PubSub interface {
+	MQ
+	// Publish 发布消息
+	//   topic : 主题/路由键
+	//   body  : 消息体
+	//   reqID : 请求 ID,用于链路追踪
 	Publish(topic string, body []byte, reqID string) error
+	// Subscribe 订阅消息
+	//   topic : 主题/路由键
+	//   group : 消费组/队列名,同一 group 下的多实例分摊消费
+	//   fn    : 消息回调,返回 nil 表示处理成功
+	Subscribe(topic, group string, fn MsgCb) error
 }
 
-type ThirdConsumer interface {
-	Subscribe(topic, queueName string, fn kafka.MsgCb) error
-}
+// MsgCb 消费回调
+type MsgCb func(m ConsumerMsg) error
 
-type messageQueue struct {
-	queue Queue
-}
-
-func NewMQ(mqType string) (Queue, error) {
-	var queue Queue
-	var err error
-
-	switch mqType {
-	case "memory":
-		queue, err = memory.NewMemoryMQ("")
-	case "kafka":
-		return nil, errors.New("unknown mq type")
-		// queue, err = kafka.NewKafkaQueue("")
-	default:
-		return nil, errors.New("unknown mq type")
-	}
-
-	return &messageQueue{queue: queue}, err
-}
-
-func (m *messageQueue) Produce(task worker.Task) error {
-	return m.queue.Produce(task)
-}
-
-func (m *messageQueue) Consume() (worker.Task, error) {
-	return m.queue.Consume()
-}
-
-func (m *messageQueue) Close() error {
-	return m.queue.Close()
+// ConsumerMsg 消费到的消息抽象
+type ConsumerMsg interface {
+	GetBody() []byte // 消息体
+	GetID() string   // 消息 ID / 请求 ID
+	Ack() error      // 手动 ack
 }

@@ -7,12 +7,8 @@
 
 package main
 
-import "github.com/weitrue/Seckill/utils"
+import "github.com/weitrue/Seckill/cmd"
 
 func main() {
-	//cmd.Execute()
-	//utils.CreateXlsx()
-	//utils.WritePubPriFromXlsx()
-	//utils.GenerateTargetList(7075)
-	utils.GenerateData("")
+	cmd.Execute()
 }
