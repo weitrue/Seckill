@@ -16,8 +16,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/weitrue/Seckill/infrastructure/config/cluster"
-	"github.com/weitrue/Seckill/infrastructure/stores/etcd"
+	"github.com/weitrue/Seckill/internal/infrastructure/config/cluster"
+	"github.com/weitrue/Seckill/internal/infrastructure/stores/etcd"
 )
 
 var cfgFile string

@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	logging "github.com/weitrue/Seckill/infrastructure/services/local/xlogging"
-	xzap "github.com/weitrue/Seckill/infrastructure/services/local/xlogging/zap"
+	"reflect"
+	"time"
+
+	logging "github.com/weitrue/Seckill/internal/infrastructure/services/local/xlogging"
+	xzap "github.com/weitrue/Seckill/internal/infrastructure/services/local/xlogging/zap"
 	"github.com/weitrue/Seckill/pkg/errcode"
 	"github.com/weitrue/Seckill/pkg/jwt"
 	sliceUtil "github.com/weitrue/Seckill/pkg/utils/slice"
-	"reflect"
-	"time"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -41,10 +42,11 @@ func NewBaseModel(ctx context.Context, db *gorm.DB) *BaseModel {
 }
 
 // ParseUpdateMap 解析模型数据获取对应的更新map，更新时间字段会自动跟踪，参数
-//   data 须为模型数据结构体或其所对应指针
-//   omits 不更新的字段列表，只在selects长度为0时生效
-//   selects 指定更新的字段列表，长度为0时，生成的更新map取模型数据非零值并忽略主键和创建时间字段
-//   notIgnores 不忽略的字段列表，只在selects长度为0时生效，与omits冲突时，以omits为准
+//
+//	data 须为模型数据结构体或其所对应指针
+//	omits 不更新的字段列表，只在selects长度为0时生效
+//	selects 指定更新的字段列表，长度为0时，生成的更新map取模型数据非零值并忽略主键和创建时间字段
+//	notIgnores 不忽略的字段列表，只在selects长度为0时生效，与omits冲突时，以omits为准
 func (m *BaseModel) ParseUpdateMap(data interface{}, omits, selects []string, notIgnores ...string) (map[string]interface{}, error) {
 	db := m.DB.WithContext(m.Ctx)
 	stmt := db.Statement

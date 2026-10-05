@@ -19,7 +19,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sys/unix"
 
-	"github.com/weitrue/Seckill/infrastructure/config"
+	"github.com/weitrue/Seckill/internal/infrastructure/config"
 )
 
 // Listen 服务监听

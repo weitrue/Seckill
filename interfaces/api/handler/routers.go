@@ -8,9 +8,9 @@
 package handler
 
 import (
-	"github.com/weitrue/Seckill/application/api"
-	"github.com/weitrue/Seckill/infrastructure/services/local/circuitbreaker"
-	"github.com/weitrue/Seckill/infrastructure/services/local/middlewares"
+	"github.com/weitrue/Seckill/internal/application/api"
+	"github.com/weitrue/Seckill/internal/infrastructure/services/local/circuitbreaker"
+	"github.com/weitrue/Seckill/internal/infrastructure/services/local/middlewares"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"

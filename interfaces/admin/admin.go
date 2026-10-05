@@ -15,9 +15,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"github.com/weitrue/Seckill/infrastructure/config"
-	"github.com/weitrue/Seckill/infrastructure/config/cluster"
+
 	"github.com/weitrue/Seckill/interfaces/admin/handler"
+	"github.com/weitrue/Seckill/internal/infrastructure/config"
+	"github.com/weitrue/Seckill/internal/infrastructure/config/cluster"
 	utils2 "github.com/weitrue/Seckill/pkg/utils"
 )
 

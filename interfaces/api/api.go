@@ -16,10 +16,10 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
-	"github.com/weitrue/Seckill/domain/shop"
-	"github.com/weitrue/Seckill/infrastructure/config"
-	"github.com/weitrue/Seckill/infrastructure/stores/redis"
 	"github.com/weitrue/Seckill/interfaces/api/handler"
+	"github.com/weitrue/Seckill/internal/domain/shop"
+	"github.com/weitrue/Seckill/internal/infrastructure/config"
+	"github.com/weitrue/Seckill/internal/infrastructure/stores/redis"
 	utils2 "github.com/weitrue/Seckill/pkg/utils"
 )
 

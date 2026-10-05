@@ -12,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 
-	"github.com/weitrue/Seckill/application/admin"
+	"github.com/weitrue/Seckill/internal/application/admin"
 )
 
 func InitRouters(g *gin.Engine) {

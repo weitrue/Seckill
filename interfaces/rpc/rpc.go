@@ -10,16 +10,16 @@ package rpc
 import (
 	"sync"
 
-	"github.com/weitrue/Seckill/application/api"
-	"github.com/weitrue/Seckill/application/api/rpc"
-	"github.com/weitrue/Seckill/infrastructure/config"
-	"github.com/weitrue/Seckill/infrastructure/config/cluster"
-	utils2 "github.com/weitrue/Seckill/pkg/utils"
-
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+
+	"github.com/weitrue/Seckill/internal/application/api"
+	"github.com/weitrue/Seckill/internal/application/api/rpc"
+	"github.com/weitrue/Seckill/internal/infrastructure/config"
+	"github.com/weitrue/Seckill/internal/infrastructure/config/cluster"
+	utils2 "github.com/weitrue/Seckill/pkg/utils"
 )
 
 var (

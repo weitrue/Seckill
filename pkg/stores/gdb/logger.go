@@ -3,10 +3,12 @@ package gdb
 import (
 	"context"
 	"fmt"
-	xzap "github.com/weitrue/Seckill/infrastructure/services/local/xlogging/zap"
-	"go.uber.org/zap"
 	"strings"
 	"time"
+
+	"go.uber.org/zap"
+
+	xzap "github.com/weitrue/Seckill/internal/infrastructure/services/local/xlogging/zap"
 
 	"github.com/go-stack/stack"
 	"gorm.io/gorm/logger"
