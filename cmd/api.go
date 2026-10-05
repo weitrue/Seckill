@@ -8,8 +8,8 @@
 package cmd
 
 import (
-	"github.com/weitrue/Seckill/interfaces/api"
-	"github.com/weitrue/Seckill/interfaces/rpc"
+	rpc "github.com/weitrue/Seckill/interfaces/grpc"
+	"github.com/weitrue/Seckill/interfaces/http/api"
 
 	"os"
 	"os/signal"

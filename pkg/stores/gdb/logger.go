@@ -6,11 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"go.uber.org/zap"
-
-	xzap "github.com/weitrue/Seckill/internal/infrastructure/services/local/xlogging/zap"
-
 	"github.com/go-stack/stack"
+	"go.uber.org/zap"
 	"gorm.io/gorm/logger"
 )
 
@@ -20,7 +17,10 @@ const (
 	traceError = "%s %s [%.3fms] [rows:%v] %s"
 )
 
-// Logger 日志记录器
+// Logger gorm 日志记录器
+//
+//	走 zap.L() 全局 logger,业务侧通过 zap.ReplaceGlobals() 配置后生效
+//	保留 ctx 入参以匹配 gorm/logger.Interface,后续可从 ctx 携带 trace 字段
 type Logger struct {
 	LogLevel      logger.LogLevel
 	SlowThreshold time.Duration
@@ -40,22 +40,25 @@ func (l *Logger) LogMode(level logger.LogLevel) logger.Interface {
 
 // Info Info日志记录
 func (l *Logger) Info(ctx context.Context, msg string, data ...interface{}) {
+	_ = ctx
 	if l.LogLevel >= logger.Info {
-		xzap.WithContext(ctx).Info("DB", zap.String("content", fmt.Sprintf(msg, data...)))
+		zap.L().Info("DB", zap.String("content", fmt.Sprintf(msg, data...)))
 	}
 }
 
 // Warn Warn日志记录
 func (l *Logger) Warn(ctx context.Context, msg string, data ...interface{}) {
+	_ = ctx
 	if l.LogLevel >= logger.Warn {
-		xzap.WithContext(ctx).Warn("DB", zap.String("content", fmt.Sprintf(msg, data...)))
+		zap.L().Warn("DB", zap.String("content", fmt.Sprintf(msg, data...)))
 	}
 }
 
 // Error Error日志记录
 func (l *Logger) Error(ctx context.Context, msg string, data ...interface{}) {
+	_ = ctx
 	if l.LogLevel >= logger.Error {
-		xzap.WithContext(ctx).Error("DB", zap.String("content", fmt.Sprintf(msg, data...)))
+		zap.L().Error("DB", zap.String("content", fmt.Sprintf(msg, data...)))
 	}
 }
 
@@ -75,10 +78,8 @@ func (l *Logger) Trace(ctx context.Context, begin time.Time, fc func() (string, 
 			sql, rows := fc()
 			slowLog := fmt.Sprintf("Slow SQL Greater Than %v", l.SlowThreshold)
 			if rows == -1 {
-				// log.Slowf(traceWarn, FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, "-", sql)
 				l.Warn(ctx, traceWarn, FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, "-", sql)
 			} else {
-				// log.Slowf(traceWarn, FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, rows, sql)
 				l.Warn(ctx, traceWarn, FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, rows, sql)
 			}
 		case l.LogLevel == logger.Info:

@@ -7,14 +7,12 @@ import (
 	"reflect"
 	"time"
 
-	logging "github.com/weitrue/Seckill/internal/infrastructure/services/local/xlogging"
-	xzap "github.com/weitrue/Seckill/internal/infrastructure/services/local/xlogging/zap"
+	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
+
 	"github.com/weitrue/Seckill/pkg/errcode"
 	"github.com/weitrue/Seckill/pkg/jwt"
 	sliceUtil "github.com/weitrue/Seckill/pkg/utils/slice"
-
-	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 )
 
 // ContextKey 上下文key类型
@@ -26,18 +24,18 @@ func (c ContextKey) String() string {
 }
 
 // BaseModel 基础模型
+//
+//	后续如需 ctx-aware 日志,可通过业务侧注入(避免 pkg → internal 的反向依赖)
 type BaseModel struct {
 	Ctx context.Context
 	DB  *gorm.DB
-	logging.Logger
 }
 
 // NewBaseModel 新建基础模型
 func NewBaseModel(ctx context.Context, db *gorm.DB) *BaseModel {
 	return &BaseModel{
-		Ctx:    ctx,
-		DB:     db.WithContext(ctx),
-		Logger: xzap.WithContext(ctx),
+		Ctx: ctx,
+		DB:  db.WithContext(ctx),
 	}
 }
 

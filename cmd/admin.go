@@ -14,7 +14,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/weitrue/Seckill/interfaces/admin"
+	"github.com/weitrue/Seckill/interfaces/http/admin"
 )
 
 var adminCmd = &cobra.Command{
@@ -30,7 +30,7 @@ var adminCmd = &cobra.Command{
 			}
 			close(onExit)
 		}()
-		
+
 		onSignal := make(chan os.Signal)
 		signal.Notify(onSignal, syscall.SIGINT, syscall.SIGTERM)
 		select {
